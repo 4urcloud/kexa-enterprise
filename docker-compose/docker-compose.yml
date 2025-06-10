@@ -13,6 +13,15 @@ services:
       - CRONICLE_API_KEY=FnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK # same as the one used in Cronicle & Kexa API
       - URL_API_HOST=http://kexaapi:4012/api # Kexa API url (ending with /api)
       - CRONICLE_URL=http://cronicle:3012 # Cronicle API url (ending with /api)
+    networks:
+      - kexanetwork
+    depends_on:
+      - keycloak
+      - cronicle
+      - seq
+      - kexaapi
+      - bddpostgresql
+    
 
   kexaapi:
     build:
@@ -50,6 +59,8 @@ services:
       - bddpostgresql
       - keycloak
       - seq
+    networks:
+      - kexanetwork
 
   seq:
     image: datalust/seq:latest
@@ -61,6 +72,8 @@ services:
       - 8441:80
     environment:
       - ACCEPT_EULA=Y
+    networks:
+      - kexanetwork
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0
@@ -83,6 +96,8 @@ services:
       - "8443:8443"
     volumes:
       - ./keycloak:/data/keycloak
+    networks:
+      - kexanetwork
 
   cronicle:
     image: innovtech/kexa-cronicle:latest
@@ -100,6 +115,8 @@ services:
       - KEXA_API_TOKEN="14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - kexanetwork
 
   bddpostgresql:
     image: postgres:latest
@@ -118,3 +135,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - kexanetwork
+
+networks:
+  kexanetwork:
+    driver: bridge
