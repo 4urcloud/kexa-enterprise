@@ -73,6 +73,11 @@ services:
       - 8441:80
     environment:
       ACCEPT_EULA: "Y"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - kexanetwork
 
@@ -83,13 +88,18 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HEALTH_ENABLED: "true"
+      KC_HEALTH_ENABLED: true
     command: ["start-dev"]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      test:
+        [
+          "CMD-SHELL",
+          '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live',
+        ]
       interval: 15s
-      timeout: 2s
-      retries: 15
+      timeout: 10s
+      retries: 5
+      start_period: 5s
     ports:
       - "8080:8080"
     volumes:
