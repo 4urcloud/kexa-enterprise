@@ -10,7 +10,7 @@ services:
     ports:
       - "9000:9000"
     environment:
-      KEYCLOAK_URL: "http://keycloak:8080/"
+      KEYCLOAK_URL: "http://localhost:8080/"
       KEYCLOAK_REALM: "latestRealm" # default Realm
       CRONICLE_API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # same as the one used in Cronicle & Kexa API
       URL_API_HOST: "http://kexaapi:4012/api" # Kexa API url (ending with /api)
@@ -34,15 +34,15 @@ services:
     ports:
       - "4012:4012"
     environment:
-      KEYCLOAK_URL: "http://localhost:8080/"
+      KEYCLOAK_URL: "http://keycloak:8080/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
-      KEXA_URL: "http://localhost:9000/*"
+      KEXA_URL: "http://kexafrontend:9000/*"
       PORT: 4012
       SEQ_URL: "http://seq:5341"
       DATASOURCE_TYPE: postgres # mysql or postgres
       DS_HOST: bddpostgresql
-      DS_PORT: 3306
+      DS_PORT: 5432
       DS_USER: admin
       DS_PASSWORD: admn45
       DS_DATABASE: kexabdd
@@ -72,7 +72,8 @@ services:
       - 5341:5341
       - 8441:80
     environment:
-      ACCEPT_EULA: "Y"
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORD: admin45
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 10s
