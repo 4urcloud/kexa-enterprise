@@ -57,9 +57,12 @@ services:
       CRONICLE_API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # as you want
       HELM_APP_NAME: kexa-helm
     depends_on:
-      - bddpostgresql
-      - keycloak
-      - seq
+      bddpostgresql:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      seq:
+        condition: service_healthy
     networks:
       - kexanetwork
 
@@ -89,18 +92,17 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HEALTH_ENABLED: true
+      KC_HEALTH_ENABLED: 'true'
+      KC_METRICS_ENABLED: 'true'
     command: ["start-dev"]
+    depends_on:
+      bddpostgresql:
+        condition: service_healthy
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live',
-        ]
-      interval: 15s
-      timeout: 10s
+      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live']
+      interval: 5s
+      timeout: 5s
       retries: 5
-      start_period: 5s
     ports:
       - "8080:8080"
     volumes:
