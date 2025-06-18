@@ -34,10 +34,10 @@ services:
     ports:
       - "4012:4012"
     environment:
-      KEYCLOAK_URL: "http://keycloak:8080/"
+      KEYCLOAK_URL: "http://localhost:8080/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
-      KEXA_URL: "http://kexafrontend:9000/*"
+      KEXA_URL: "http://localhost:9000/*"
       PORT: 4012
       SEQ_URL: "http://seq:5341"
       DATASOURCE_TYPE: postgres # mysql or postgres
