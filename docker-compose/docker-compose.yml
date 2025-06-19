@@ -15,6 +15,7 @@ services:
       CRONICLE_API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # same as the one used in Cronicle & Kexa API
       URL_API_HOST: "http://localhost:4012/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "http://localhost:3012/api" # Cronicle API url (ending with /api)
+      GRAFANA_URL: "http://localhost:8082"
     networks:
       - kexanetwork
     depends_on:
