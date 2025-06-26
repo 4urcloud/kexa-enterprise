@@ -179,7 +179,7 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     volumes:
-      - pgdata2:/var/lib/postgresql/data
+      - ./pgvector-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     networks:
