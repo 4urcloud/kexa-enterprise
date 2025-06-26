@@ -125,7 +125,7 @@ services:
       - kexanetwork
 
   cronicle:
-    image: innovtech/kexa-cronicle-local:arm64
+    image: innovtech/kexa-cronicle-local:latest
     container_name: cronicle-dind-kexa
     ports:
       - "3012:3012"
