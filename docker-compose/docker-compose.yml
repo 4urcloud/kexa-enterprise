@@ -4,6 +4,13 @@ services:
   kexafrontend:
     build:
       context: git@github.com:4urcloud/Kexa_Saas_Front.git#dev
+      args:
+        - KEYCLOAK_URL=http://localhost:8080/
+        - KEYCLOAK_REALM=latestRealm
+        - CRONICLE_API_KEY=aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK
+        - URL_API_HOST=http://localhost:4012/api
+        - CRONICLE_URL=http://localhost:3012/api
+        - GRAFANA_URL=http://localhost:8082
       ssh:
         - default=$HOME/.ssh/id_rsa
     container_name: kexafrontend
