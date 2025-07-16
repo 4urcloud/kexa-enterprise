@@ -10,11 +10,10 @@ services:
     ports:
       - "9000:9000"
     environment:
-      KEYCLOAK_URL: "http://localhost:8080/"
+      KEYCLOAK_URL: "http://keycloak:8080/"
       KEYCLOAK_REALM: "latestRealm" # default Realm
-      CRONICLE_API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # same as the one used in Cronicle & Kexa API
-      URL_API_HOST: "http://localhost:4012/api" # Kexa API url (ending with /api)
-      CRONICLE_URL: "http://localhost:3012/api" # Cronicle API url (ending with /api)
+      URL_API_HOST: "http://kexaapi:4012/api" # Kexa API url (ending with /api)
+      CRONICLE_URL: "http://cronicle:3012/api" # Cronicle API url (ending with /api)
     networks:
       - kexanetwork
     depends_on:
@@ -24,8 +23,8 @@ services:
         condition: service_healthy
       seq:
         condition: service_healthy
-      # kexaapi:
-      #   condition: service_healthy
+      kexaapi:
+        condition: service_healthy
 
   kexaapi:
     build:
@@ -58,13 +57,14 @@ services:
       DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
       DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
       CRONICLE_URL: "http://cronicle:3012/api"
-      CRONICLE_API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # as you want
+      CRONICLE_API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # as you want but same in Cronicle
       HELM_APP_NAME: kexa-helm
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4012/api/category/"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4012/api/category/"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+      start_period: 60s
     depends_on:
       bddpostgresql:
         condition: service_healthy
@@ -88,14 +88,15 @@ services:
       SEQ_FIRSTRUN_ADMINPASSWORD: admin45
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 10s
-      timeout: 5s
+      interval: 30s
+      timeout: 10s
       retries: 5
+      start_period: 30s
     networks:
       - kexanetwork
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:22.0.1
     user: root
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -108,10 +109,11 @@ services:
       bddpostgresql:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { java.net.URI uri = java.net.URI.create(args[0]); System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)uri.toURL().openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live']
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8080; echo \"Healthcheck attempt\" >&2; if [ $? -eq 0 ]; then exit 0; else exit 1; fi'"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 30s
     ports:
       - "8080:8080"
     volumes:
@@ -121,31 +123,32 @@ services:
       - kexanetwork
 
   cronicle:
-    image: innovtech/kexa-cronicle-local:arm64
+    image: innovtech/kexa-cronicle-local:latest # or arm64
     container_name: cronicle-dind-kexa
     ports:
       - "3012:3012"
     environment:
-      API_KEY: "aFnqKjrP#hvnqDg992b@wXVTgQumC#m#K3i3T5t4hyAyMkK" # CRONICLE_API_KEY in Kexa API
+      API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # CRONICLE_API_KEY in Kexa API
       INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
       API_SECRET_KEY: "secretKey" # same as the one in Kexa API
       API_SECRET_IV: "secretIV" # same as the one in Kexa API
       API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
-      KEXA_API_URL: "http://kexaapi:4012/api"
+      KEXA_API_URL: "http://localhost:4012/api"
       KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
       KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping || exit 1"]
-      interval: 5s
-      timeout: 1s
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping"]
+      interval: 10s
+      timeout: 5s
       retries: 3
+      start_period: 30s
     networks:
       - kexanetwork
 
   bddpostgresql:
-    image: postgres:latest
+    image: postgres:15
     container_name: bddpostgresql
     ports:
       - "5432:5432"
@@ -161,6 +164,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     networks:
       - kexanetwork
 
@@ -178,15 +182,59 @@ services:
       - GF_DATABASE_USER=admin
       - GF_DATABASE_PASSWORD=admn45
       - GF_DATABASE_SSL_MODE=disable
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
     volumes:
       - ./grafana:/var/lib/grafana
       - ./grafana-dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
       - ./grafana-dashboards/dashboards:/var/lib/grafana/dashboards
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks:
       - kexanetwork
     depends_on:
       bddpostgresql:
         condition: service_healthy
+
+  db:
+    image: pgvector/pgvector:0.8.0-pg17
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - ./pgvector-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - kexanetwork
+
+  ragapi:
+    build:
+      context: git@github.com:4urcloud/kexa_genai.git#feat/no-ref/add-endpoint-remediation
+      ssh:
+        - default=$HOME/.ssh/id_rsa
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - EMBEDDINGS_PROVIDER=ollama
+      - EMBEDDINGS_MODEL=bge-m3
+      - CHUNK_SIZE=1000
+      - CHUNK_OVERLAP=200
+      - OLLAMA_BASE_URL=http://127.0.0.1:11434
+      - DEBUG_RAG_API=True
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - db
+    networks:
+      - kexanetwork
 
 networks:
   kexanetwork:
