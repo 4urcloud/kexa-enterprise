@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kexa.fullname" . }}-cronicle
+  labels:
+    {{- include "kexa.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kexa.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kexa.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kexa.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+    # --------------------------------------------------------------------------------------------- #
+        # kexafrontend
+        - name: kexa-enterprise-cronicle
+          image: kexa/kexa-enterprise-cronicle
+          environment:
+            API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # CRONICLE_API_KEY in Kexa API
+            INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
+            API_SECRET_KEY: "secretKey" # same as the one in Kexa API
+            API_SECRET_IV: "secretIV" # same as the one in Kexa API
+            API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
+            KEXA_API_URL: "http://localhost:4012/api"
+            KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
+            KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
+          ports:
+            - containerPort: 3012

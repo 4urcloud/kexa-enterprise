@@ -1,0 +1,15 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.7.19
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 9.2.10
+- name: seq
+  repository: https://cloudnativeapp.github.io/charts/curated/
+  version: 1.0.0
+- name: keycloak
+  repository: https://charts.bitnami.com/bitnami
+  version: 24.7.7
+digest: sha256:444f9e25e057fcf6e0a2531343aeb011bea3ec74532c66d9cc88939e07badd52
+generated: "2025-07-17T14:56:51.580264+02:00"

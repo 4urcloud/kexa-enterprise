@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kexa.fullname" . }}-api
+  labels:
+    {{- include "kexa.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kexa.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "kexa.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kexa.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+    # --------------------------------------------------------------------------------------------- #
+        # kexafrontend
+        - name: kexa-enterprise-front
+          image: kexa/kexa-enterprise-front
+          environment:
+            KEYCLOAK_URL: "http://keycloak:8080/"
+            KEYCLOAK_REALM: "latestRealm" # default Realm
+            URL_API_HOST: "http://kexa-enterprise-api:4012/api" # Kexa API url (ending with /api)
+            CRONICLE_URL: "http://cronicle:3012/api" # Cronicle API url (ending with /api)
+          ports:
+            - containerPort: 9000
