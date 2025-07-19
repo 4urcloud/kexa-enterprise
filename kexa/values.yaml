@@ -14,8 +14,8 @@ image:
   tag: ""
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
-# This is to override the chart name.
+imagePullSecrets:
+  - name: kexa-pull-secret
 nameOverride: ""
 fullnameOverride: ""
 
@@ -148,13 +148,21 @@ seq:
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the keycloack service
 keycloack:
-  servicePort: "8080"
-  environment:
-    - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-    - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-    - KEYCLOAK_ADMIN=admin
-    - KEYCLOAK_ADMIN_PASSWORD=admin
-    - KC_HEALTH_ENABLED=true
+  serviceAccount:
+    create: true
+  service:
+    httpPort: 80
+  extraEnv: |
+    - name: KC_BOOTSTRAP_ADMIN_USERNAME
+      value: admin
+    - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+      value: admin
+    - name: KEYCLOAK_ADMIN
+      value: admin
+    - name: KEYCLOAK_ADMIN_PASSWORD
+      value: admin
+    - name: KC_HEALTH_ENABLED
+      value: true
   command: ["start-dev"]
   volumes:
     - ./keycloak:/opt/keycloak/data
