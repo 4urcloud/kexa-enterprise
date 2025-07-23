@@ -127,6 +127,14 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+# --------------------------------------------------------------------------------------------- #
+# secret pull secret for pulling images from a private repository
+secretpull:
+  name: kexa-pull-secret
+  docker-server: https://registry-1.docker.io/v2/
+  docker-username: kexa
+  docker-password: xxxxxxx # replace with your docker token
+
 
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the postgresql service
