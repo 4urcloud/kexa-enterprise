@@ -2,7 +2,7 @@ name: "kexa-enterprise"
 
 services:
   kexafrontend:
-    image: kexa/kexa-enterprise-frontend
+    image: kexa/kexa-enterprise-front
     container_name: kexafrontend
     ports:
       - "9000:9000"

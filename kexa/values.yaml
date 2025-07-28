@@ -172,9 +172,6 @@ keycloack:
     - name: KC_HEALTH_ENABLED
       value: true
   command: ["start-dev"]
-  volumes:
-    - ./keycloak:/opt/keycloak/data
-    - ./keycloak-script.sh:/tmp/keycloak-script.sh
   ports:
     - "8080:8080"
 
