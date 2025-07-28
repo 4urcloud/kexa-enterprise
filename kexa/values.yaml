@@ -14,8 +14,7 @@ image:
   tag: ""
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets:
-  - name: kexa-pull-secret
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -129,11 +128,12 @@ tolerations: []
 affinity: {}
 # --------------------------------------------------------------------------------------------- #
 # secret pull secret for pulling images from a private repository
-secretpull:
-  name: kexa-pull-secret
-  docker-server: https://registry-1.docker.io/v2/
-  docker-username: kexa
-  docker-password: xxxxxxx # replace with your docker token
+
+# secretpull:
+#   name: kexa-pull-secret
+#   dockerserver: "https://registry-1.docker.io/v2/"
+#   dockerusername: "kexa"
+#   dockerpassword: "blabla" # replace with your docker token
 
 
 # --------------------------------------------------------------------------------------------- #
@@ -178,7 +178,53 @@ keycloack:
   ports:
     - "8080:8080"
 
-
+# --------------------------------------------------------------------------------------------- #
+# This is for setting up frontend
+kexafront:
+  environment:
+    KEYCLOAK_URL: "http://kexa-keycloak-headless.kexa.svc.cluster.local:8080/"
+    KEYCLOAK_REALM: "latestRealm" # default Realm
+    URL_API_HOST: "http://kexa-api.kexa.svc.cluster.local:4012/api" # Kexa API url (ending with /api)
+    CRONICLE_URL: "http://kexa-cronicle.kexa.svc.cluster.local:3012/api" # Cronicle API url (ending with /api)
+# --------------------------------------------------------------------------------------------- #
+# This is for setting up api
+kexaapi:
+  environment:
+    KEYCLOAK_URL: "http://kexa-keycloack-headless.kexa.svc.cluster.local:8080/"
+    KEYCLOAK_PASSWORD: admin
+    KEYCLOAK_USER: admin
+    KEXA_URL: "http://kexa-frontend.kexa.svc.cluster.local:9000/*"
+    PORT: 4012
+    SEQ_URL: "http://kexa-seq.kexa.svc.cluster.local:5341"
+    DATASOURCE_TYPE: postgres # mysql or postgres
+    DS_HOST: bddpostgresql
+    DS_PORT: 5432
+    DS_USER: admin
+    DS_PASSWORD: admn45
+    DS_DATABASE: kexabdd
+    DS_NAME: kexabdd
+    SECRET_KEY: secretKey # same as in Cronicle DinD
+    SECRET_IV: secretIV # same as in Cronicle DinD
+    ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle DinD
+    DEFAULT_CLIENT_PASSWORD: defaultPassword # Choose init password, will be changed on first login
+    DEFAULT_REALM_NAME: latestRealm # default Realm: same as in Kexa Frontend
+    DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
+    DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
+    CRONICLE_URL: "http://kexa-cronicle.kexa.svc.cluster.local:3012/api"
+    CRONICLE_API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # as you want but same in Cronicle
+    HELM_APP_NAME: kexa-helm
+# --------------------------------------------------------------------------------------------- #
+# This is for setting cronicle
+kexacronicle:
+  environment:
+    API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # CRONICLE_API_KEY in Kexa API
+    INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
+    API_SECRET_KEY: "secretKey" # same as the one in Kexa API
+    API_SECRET_IV: "secretIV" # same as the one in Kexa API
+    API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
+    KEXA_API_URL: "http://kexa-api.kexa.svc.cluster.local:4012/api"
+    KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
+    KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the Grafana service
 grafana:

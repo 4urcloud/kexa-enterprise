@@ -2,10 +2,7 @@ name: "kexa-enterprise"
 
 services:
   kexafrontend:
-    build:
-      context: git@github.com:4urcloud/Kexa_Saas_Front.git#dev
-      ssh:
-        - default=$HOME/.ssh/id_rsa
+    image: kexa/kexa-enterprise-frontend
     container_name: kexafrontend
     ports:
       - "9000:9000"
@@ -27,10 +24,7 @@ services:
         condition: service_healthy
 
   kexaapi:
-    build:
-      context: git@github.com:4urcloud/Kexa_API.git#dev
-      ssh:
-        - default=$HOME/.ssh/id_rsa
+    image: kexa/kexa-enterprise-api
     restart: always
     container_name: kexaapi
     ports:
@@ -123,7 +117,7 @@ services:
       - kexanetwork
 
   cronicle:
-    image: innovtech/kexa-cronicle-local:latest # or arm64
+    image: kexa/kexa-cronicle
     container_name: cronicle-dind-kexa
     ports:
       - "3012:3012"

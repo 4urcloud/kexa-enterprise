@@ -36,15 +36,13 @@ spec:
     # --------------------------------------------------------------------------------------------- #
         # kexafrontend
         - name: kexa-enterprise-cronicle
-          image: kexa/kexa-enterprise-cronicle
-          environment:
-            API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # CRONICLE_API_KEY in Kexa API
-            INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
-            API_SECRET_KEY: "secretKey" # same as the one in Kexa API
-            API_SECRET_IV: "secretIV" # same as the one in Kexa API
-            API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
-            KEXA_API_URL: "http://localhost:4012/api"
-            KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
-            KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
+          image: kexa/kexa-cronicle
+          {{- if (merge .Values.kexacronicle.environment .Values.kexacronicle.environment) }}
+          env:
+          {{- range $name, $value := merge .Values.kexacronicle.environment .Values.kexacronicle.environment }}
+          - name: {{ $name | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
           ports:
             - containerPort: 3012

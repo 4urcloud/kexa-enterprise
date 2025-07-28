@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kexa.fullname" . }}-frontend
+  name: {{ include "kexa.fullname" . }}-api
   labels:
     {{- include "kexa.labels" . | nindent 4 }}
 spec:
@@ -33,32 +33,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        # kexa api 
+    # --------------------------------------------------------------------------------------------- #
+        # kexaapi
         - name: kexa-enterprise-api
           image: kexa/kexa-enterprise-api
-          environment:
-            KEYCLOAK_URL: "http://keycloak:8080/"
-            KEYCLOAK_PASSWORD: admin
-            KEYCLOAK_USER: admin
-            KEXA_URL: "http://kexa-enterprise-front:9000/*"
-            PORT: 4012
-            SEQ_URL: "http://seq:5341"
-            DATASOURCE_TYPE: postgres # mysql or postgres
-            DS_HOST: bddpostgresql
-            DS_PORT: 5432
-            DS_USER: admin
-            DS_PASSWORD: admn45
-            DS_DATABASE: kexabdd
-            DS_NAME: kexabdd
-            SECRET_KEY: secretKey # same as in Cronicle DinD
-            SECRET_IV: secretIV # same as in Cronicle DinD
-            ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle DinD
-            DEFAULT_CLIENT_PASSWORD: defaultPassword # Choose init password, will be changed on first login
-            DEFAULT_REALM_NAME: latestRealm # default Realm: same as in Kexa Frontend
-            DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
-            DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
-            CRONICLE_URL: "http://cronicle:3012/api"
-            CRONICLE_API_KEY: "thisIsACroniclz19çJDàjdaàandàa" # as you want but same in Cronicle
+          {{- if (merge .Values.kexaapi.environment .Values.kexaapi.environment) }}
+          env:
+          {{- range $name, $value := merge .Values.kexaapi.environment .Values.kexaapi.environment }}
+          - name: {{ $name | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
           ports:
             - containerPort: 4012
     # --------------------------------------------------------------------------------------------- #
