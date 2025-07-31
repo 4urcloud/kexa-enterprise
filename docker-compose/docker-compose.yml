@@ -17,7 +17,7 @@ services:
         condition: service_healthy
       seq:
         condition: service_healthy
-      keycloack:
+      keycloak:
         condition: service_healthy
 
   kexaapi:
@@ -61,7 +61,7 @@ services:
         condition: service_healthy
       seq:
         condition: service_healthy
-      keycloack:
+      keycloak:
         condition: service_healthy
     networks:
       - kexanetwork
