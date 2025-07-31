@@ -1,15 +1,37 @@
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-scripts/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx-scripts/certs:/etc/nginx/certs
+    restart: always
+    networks:
+      - kexanetwork
+    # depends_on:
+    #   kexafrontend:
+    #     condition: service_healthy
+
   kexafrontend:
     image: kexa/kexa-enterprise-front
     container_name: kexafrontend
     ports:
-      - "80:9000"
+      - "9400:9000"
     environment:
-      KEYCLOAK_URL: "http://${HOST}:8080/"
+      KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "latestRealm" # default Realm
       URL_API_HOST: "http://${HOST}:4012/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "http://${HOST}:3012/api" # Cronicle API url (ending with /api)
       GRAFANA_URL: "http://${HOST}:8082/"
+    restart: always
+    # healthcheck:
+    #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 2
+    #   start_period: 60s
     networks:
       - kexanetwork
     depends_on:
@@ -27,7 +49,7 @@ services:
     ports:
       - "4012:4012"
     environment:
-      KEYCLOAK_URL: "http://${HOST}:8080/"
+      KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -95,9 +117,14 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
-    command: ["start-dev"]
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
+    command:
+      - start
+      - --https-port=8443
+      - --hostname-strict=false
     healthcheck:
-      test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:9000/health/live"]
+      test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -105,11 +132,12 @@ services:
       bddpostgresql:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8443:8443"
     volumes:
       - ./keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
       - ./keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
+      - ./keycloak-scripts/certs:/opt/keycloak/conf
     networks:
       - kexanetwork
 
