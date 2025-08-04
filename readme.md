@@ -1,3 +1,23 @@
+first clone.
+
+create certificates in docker-compose for keycloak ( server.crt ) and ningx (nginx.crt ) or add your certificates.
+
+
+
+go in the good directory for keycloak:
+in keycloak-scripts/certs directory
+run
+```console
+openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout server.key -out server.crt
+```
+
+go in the good directory for nginx:
+in nginx-scripts/certs directory
+run
+```console
+openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout nginx.key -out nginx.crt
+```
+
 run 
 ```console
 docker-compose up
