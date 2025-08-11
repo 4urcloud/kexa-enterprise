@@ -1,5 +1,5 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
+<@layout.registrationLayout displayMessage=false displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
     <#if section = "header">
     <#elseif section = "form">
     <div id="kc-form" class="page-container">
@@ -9,12 +9,16 @@
           <img src="${url.resourcesPath}/img/kexa-no-background-color.png" alt="Kexa Logo" class="kexa-logo" />
         </div>
         
+        <#if message?has_content>
+          <#include "message.ftl">
+        </#if>
+
         <div class="kexa-title-container">
           <h1 class="h1-kexa-title kexa-title-font main-title title-no-margin" style="color: black;">
             Welcome to Kexa
           </h1>
         </div>
-        
+
         <div class="introduction-text kexa-body-font">
           Sign in to your account to access Kexa Premium, first time running ?
           Check your Kexa API logs, it will display your admin credentials at first launch.
