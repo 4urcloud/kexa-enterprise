@@ -139,6 +139,7 @@ services:
         condition: service_healthy
     ports:
       - "8443:8443"
+      - "9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh

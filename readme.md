@@ -2,32 +2,34 @@ first clone.
 
 create certificates in docker-compose for keycloak ( server.crt ) and ningx (nginx.crt ) or add your certificates.
 
+or use your own certificates.
+
+Run to create self-signed certificates.
 
 
-go in the good directory for keycloak:
-in keycloak-scripts/certs directory
-run
 ```console
-openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout server.key -out server.crt
+openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout keycloak-scripts/certs/server.key -out keycloak-scripts/certs/server.crt
 ```
 
-go in the good directory for nginx:
-in nginx-scripts/certs directory
+Run to create self-signed certificates.
+
+```console
+openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout nginx-scripts/certs/nginx.key -out nginx-scripts/certs/nginx.crt
+```
+Don't forget to create the .env file in the docker-compose folder.
+
 run
 ```console
-openssl req -x509 -nodes -days 650 -newkey rsa:2048 -keyout nginx.key -out nginx.crt
+cp .env.example .env
 ```
+
 
 run 
 ```console
 docker-compose up
 ```
 
-use the helm to install.
-first create the token to download images.
-```console
-kubectl create secret -n kexa docker-registry kexa-pull-secret --docker-server="https://registry-1.docker.io/v2/" --docker-username="kexa" --docker-password="dcxkxxxlxxxlxxxnS"
-```
+For kubernetes you cab use the helm to install.
 
 install the helm kexa
 ```console
