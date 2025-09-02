@@ -24,16 +24,15 @@ version: 0.1.0
 appVersion: "1.16.0"
 icon: https://kexa.io/kexa-no-background-color.png
 dependencies:
-  - name: postgresql
+  - name: postgres
     version: 1.5.x
     repository: https://groundhog2k.github.io/helm-charts/
   - name: grafana
     version: 9.4.x
     repository: https://grafana.github.io/helm-charts
   - name: seq
-    version: v2025.2.1
+    version: v2025.2.x
     repository: https://helm.datalust.co
-  - name: keycloak
-    version: 1.5.x
-    repository: oci://registry.gitlab.com/lenitech/apps/keycloak
-    
+  - name: keycloakx
+    version: 7.1.x
+    repository: oci://ghcr.io/codecentric/helm-charts

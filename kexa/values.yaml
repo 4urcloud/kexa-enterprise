@@ -138,16 +138,22 @@ affinity: {}
 
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the postgresql service
-postgresql:
-  auth:
-    database: "kexabdd"
-    password: "admn45"
-    username: "kexaadmin"
-    postgresPassword: "admn45"
+postgres:
+  userDatabase:
+    name: 
+     value: "kexabdd"
+    password: 
+     value: "admn45"
+    user: 
+     value: "kexaadmin"
+  settings:
+    superuserPassword: 
+      value: "admn45"
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the SEQ service
 seq:
   acceptEULA: "Y"
+  firstRunAdminPassword: "admin45"
   ui:
     enabled: true
   persistence:
@@ -155,26 +161,37 @@ seq:
     size: 10Gi
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up the keycloack service
-keycloack:
+keycloakx:
+  postgresql:
+    enabled: false
   serviceAccount:
     create: true
-  service:
-    httpPort: 80
+
+  command:
+    - "/opt/keycloak/bin/kc.sh"
+    - "--verbose"
+    - "start-dev"
+    - "--http-port=8080"
+    - "--https-port=8443"
+    - "--hostname-strict=false"
+    - "--verbose"
+    - "--spi-events-listener-jboss-logging-success-level=info"
+    - "--spi-events-listener-jboss-logging-error-level=warn"
   extraEnv: |
-    - name: KC_BOOTSTRAP_ADMIN_USERNAME
-      value: admin
-    - name: KC_BOOTSTRAP_ADMIN_PASSWORD
-      value: admin
     - name: KEYCLOAK_ADMIN
       value: admin
     - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
-    - name: KC_HEALTH_ENABLED
-      value: true
-  command: ["start-dev"]
-  ports:
-    - "8080:8080"
+  dbchecker:
+    enabled: true
 
+  database:
+    vendor: postgres
+    hostname: kexa-postgres.kexa.svc.cluster.local
+    port: 5432
+    username: admin
+    password: admn45
+    database: kexabdd
 # --------------------------------------------------------------------------------------------- #
 # This is for setting up frontend
 kexafront:
@@ -187,7 +204,7 @@ kexafront:
 # This is for setting up api
 kexaapi:
   environment:
-    KEYCLOAK_URL: "http://kexa-keycloack-headless.kexa.svc.cluster.local:8080/"
+    KEYCLOAK_URL: "http://kexa-keycloak-headless.kexa.svc.cluster.local:8080/"
     KEYCLOAK_PASSWORD: admin
     KEYCLOAK_USER: admin
     KEXA_URL: "http://kexa-frontend.kexa.svc.cluster.local:9000/*"
@@ -231,7 +248,7 @@ grafana:
     - GF_SECURITY_ADMIN_USER=admin
     - GF_SECURITY_ADMIN_PASSWORD=admn45
     - GF_DATABASE_TYPE=postgres
-    - GF_DATABASE_HOST=bddpostgresql
+    - GF_DATABASE_HOST=kexa-postgres.kexa.svc.cluster.local
     - GF_DATABASE_NAME=kexabdd
     - GF_DATABASE_USER=admin
     - GF_DATABASE_PASSWORD=admn45
