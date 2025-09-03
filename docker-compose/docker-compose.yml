@@ -9,7 +9,8 @@ services:
       - ./nginx-scripts/certs:/etc/nginx/certs
     restart: always
     networks:
-      - kexanetwork
+      - kexafrontend
+      - kexabackend
     # depends_on:
     #   kexafrontend:
     #     condition: service_healthy
@@ -21,8 +22,8 @@ services:
       - "9400:9000"
     environment:
       KEYCLOAK_URL: "https://${HOST}:8443/"
-      KEYCLOAK_REALM: "latestRealm" # default Realm
-      URL_API_HOST: "http://${HOST}:4012/api" # Kexa API url (ending with /api)
+      KEYCLOAK_REALM: "kexa" # default Realm
+      URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "http://${HOST}:3012/api" # Cronicle API url (ending with /api)
       GRAFANA_URL: "http://${HOST}:8082/"
     restart: always
@@ -33,7 +34,7 @@ services:
     #   retries: 2
     #   start_period: 60s
     networks:
-      - kexanetwork
+      - kexabackend
     depends_on:
       bddpostgresql:
         condition: service_healthy
@@ -49,7 +50,7 @@ services:
     ports:
       - "4012:4012"
     environment:
-      KEYCLOAK_URL: "https://${HOST}:8443/"
+      KEYCLOAK_URL: "https://keycloak:8443/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -67,7 +68,7 @@ services:
       SECRET_IV: secretIV # same as in Cronicle DinD
       ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle DinD
       DEFAULT_CLIENT_PASSWORD: defaultPassword # Choose init password, will be changed on first login
-      DEFAULT_REALM_NAME: latestRealm # default Realm: same as in Kexa Frontend
+      DEFAULT_REALM_NAME: kexa # default Realm: same as in Kexa Frontend
       DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
       DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
       CRONICLE_URL: "http://cronicle:3012"
@@ -89,7 +90,7 @@ services:
       keycloak:
         condition: service_healthy
     networks:
-      - kexanetwork
+      - kexabackend
 
   seq:
     image: datalust/seq
@@ -109,7 +110,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   keycloak:
     image: quay.io/keycloak/keycloak
@@ -144,7 +145,8 @@ services:
       - ./keycloak-scripts/certs:/opt/keycloak/conf
       - ./keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
     networks:
-      - kexanetwork
+      - kexafrontend
+      - kexabackend
 
   cronicle:
     image: kexa/kexa-cronicle
@@ -169,7 +171,7 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   bddpostgresql:
     image: postgres
@@ -190,7 +192,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   db:
     image: pgvector/pgvector:0.8.0-pg17
@@ -203,7 +205,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - kexanetwork
+      - kexabackend
 
   ragapi:
     image: kexa/kexa-enterprise-genai
@@ -224,7 +226,7 @@ services:
     depends_on:
       - db
     networks:
-      - kexanetwork
+      - kexabackend
 
   grafana:
     image: grafana/grafana
@@ -253,11 +255,13 @@ services:
       retries: 5
       start_period: 60s
     networks:
-      - kexanetwork
+      - kexabackend
     depends_on:
       bddpostgresql:
         condition: service_healthy
 
 networks:
-  kexanetwork:
+  kexafrontend:
+    driver: bridge
+  kexabackend:
     driver: bridge
