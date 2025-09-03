@@ -20,7 +20,7 @@ services:
     ports:
       - "9400:9000"
     environment:
-      KEYCLOAK_URL: "https://${HOST}:8080/"
+      KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "latestRealm" # default Realm
       URL_API_HOST: "http://${HOST}:4012/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "http://${HOST}:3012/api" # Cronicle API url (ending with /api)
@@ -49,7 +49,7 @@ services:
     ports:
       - "4012:4012"
     environment:
-      KEYCLOAK_URL: "https://${HOST}:8080/"
+      KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -122,7 +122,9 @@ services:
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
     command:
-      - start-dev
+      - start
+      - --https-port=8443
+      - --hostname-strict=false
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
       interval: 5s
@@ -133,7 +135,7 @@ services:
         condition: service_healthy
     ports:
       - "8443:8443"
-      - "8080:8080"
+      - "9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
