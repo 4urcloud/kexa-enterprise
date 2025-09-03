@@ -27,7 +27,7 @@ correct the .env file with your values.
 
 run 
 ```console
-docker-compose up
+docker-compose up -d
 ```
 
 For kubernetes you cab use the helm to install.
