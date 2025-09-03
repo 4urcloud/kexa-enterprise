@@ -25,7 +25,7 @@ services:
       KEYCLOAK_REALM: "kexa" # default Realm
       URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "https://${HOST}/api/app" # Cronicle API url (ending with /api)
-      GRAFANA_URL: "http://${HOST}:8082/"
+      GRAFANA_URL: "http://grafana:8082/"
     restart: always
     # healthcheck:
     #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/"]
@@ -264,5 +264,4 @@ networks:
   kexafrontend:
     driver: bridge
   kexabackend:
-    internal: true
     driver: bridge
