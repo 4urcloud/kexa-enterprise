@@ -103,6 +103,7 @@ services:
     environment:
       ACCEPT_EULA: Y
       SEQ_FIRSTRUN_ADMINPASSWORD: admin45
+      SEQ_API_CANONICALURI: http://${HOST}:5341/seq
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
