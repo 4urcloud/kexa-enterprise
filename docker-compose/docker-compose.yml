@@ -9,7 +9,7 @@ services:
       - ./nginx-scripts/certs:/etc/nginx/certs
     restart: always
     networks:
-      - kexanetwork
+      - kexafrontend
     # depends_on:
     #   kexafrontend:
     #     condition: service_healthy
@@ -33,7 +33,7 @@ services:
     #   retries: 2
     #   start_period: 60s
     networks:
-      - kexanetwork
+      - kexafrontend
     depends_on:
       bddpostgresql:
         condition: service_healthy
@@ -89,7 +89,7 @@ services:
       keycloak:
         condition: service_healthy
     networks:
-      - kexanetwork
+      - kexabackend
 
   seq:
     image: datalust/seq
@@ -109,7 +109,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   keycloak:
     image: quay.io/keycloak/keycloak
@@ -144,7 +144,8 @@ services:
       - ./keycloak-scripts/certs:/opt/keycloak/conf
       - ./keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
     networks:
-      - kexanetwork
+      - kexafrontend
+      - kexabackend
 
   cronicle:
     image: kexa/kexa-cronicle
@@ -169,7 +170,7 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   bddpostgresql:
     image: postgres
@@ -190,7 +191,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - kexanetwork
+      - kexabackend
 
   db:
     image: pgvector/pgvector:0.8.0-pg17
@@ -203,7 +204,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - kexanetwork
+      - kexabackend
 
   ragapi:
     image: kexa/kexa-enterprise-genai
@@ -224,7 +225,7 @@ services:
     depends_on:
       - db
     networks:
-      - kexanetwork
+      - kexabackend
 
   grafana:
     image: grafana/grafana
@@ -253,11 +254,13 @@ services:
       retries: 5
       start_period: 60s
     networks:
-      - kexanetwork
+      - kexabackend
     depends_on:
       bddpostgresql:
         condition: service_healthy
 
 networks:
-  kexanetwork:
+  kexafrontend:
+    driver: bridge
+  kexabackend:
     driver: bridge
