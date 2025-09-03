@@ -264,4 +264,5 @@ networks:
   kexafrontend:
     driver: bridge
   kexabackend:
+    internal: true
     driver: bridge
