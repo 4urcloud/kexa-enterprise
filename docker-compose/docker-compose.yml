@@ -74,6 +74,7 @@ services:
       CRONICLE_API_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # as you want but same in Cronicle
       LLM_API_URL: "http://${HOST}:8000"
       HELM_APP_NAME: kexa-helm
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4012/api/category/"]
       interval: 30s
