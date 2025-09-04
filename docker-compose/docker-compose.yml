@@ -57,7 +57,7 @@ services:
       PORT: 4012
       SEQ_URL: "http://seq:5341"
       DATASOURCE_TYPE: postgres # mysql or postgres
-      DISABLE_SSL_CHECK: "true"
+      #DISABLE_SSL_CHECK: "true"
       DS_HOST: bddpostgresql
       DS_PORT: 5432
       DS_USER: admin
