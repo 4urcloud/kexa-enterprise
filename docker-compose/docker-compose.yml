@@ -21,7 +21,7 @@ services:
     ports:
       - "127.0.0.1:9400:9000"
     environment:
-      KEYCLOAK_URL: "https://${HOST}/auth/"
+      KEYCLOAK_URL: "https://${HOST}/keycloak/"
       KEYCLOAK_REALM: "kexa" # default Realm
       URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "https://${HOST}/api/app" # Cronicle API url (ending with /api)
