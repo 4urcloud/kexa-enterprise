@@ -50,7 +50,7 @@ services:
     ports:
       - "127.0.0.1:4012:4012"
     environment:
-      KEYCLOAK_URL: "https://keycloak:8443/"
+      KEYCLOAK_URL: "http://keycloak:8080/"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -122,15 +122,12 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge
-      KEYCLOAK_FRONTEND_URL: "https://${HOST}/keycloak/"
       KC_HTTP_RELATIVE_PATH: "/keycloak"
     command:
       - start
-      - --https-port=8443
+      - --http-port=8080
       - --hostname-strict=false
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
@@ -141,7 +138,7 @@ services:
       bddpostgresql:
         condition: service_healthy
     ports:
-      - "127.0.0.1:8443:8443"
+      - "127.0.0.1:8080:8080"
       - "127.0.0.1:9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
