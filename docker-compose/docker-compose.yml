@@ -128,6 +128,7 @@ services:
     command:
       - start
       - --http-port=8080
+      - --http-enable=true
       - --hostname-strict=false
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
