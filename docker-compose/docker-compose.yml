@@ -19,7 +19,7 @@ services:
     image: kexa/kexa-enterprise-front
     container_name: kexafrontend
     ports:
-      - "9400:9000"
+      - "127.0.0.1:9400:9000"
     environment:
       KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "kexa" # default Realm
@@ -48,7 +48,7 @@ services:
     restart: always
     container_name: kexaapi
     ports:
-      - "4012:4012"
+      - "127.0.0.1:4012:4012"
     environment:
       KEYCLOAK_URL: "https://keycloak:8443/"
       KEYCLOAK_PASSWORD: admin
@@ -98,8 +98,8 @@ services:
     volumes:
       - ./seq:/data
     ports:
-      - 5341:5341
-      - 8441:80
+      - "127.0.0.1:5341:5341"
+      - "127.0.0.1:8441:80"
     environment:
       ACCEPT_EULA: Y
       SEQ_FIRSTRUN_ADMINPASSWORD: admin45
@@ -138,7 +138,7 @@ services:
         condition: service_healthy
     ports:
       - "8443:8443"
-      - "9000:9000"
+      - "127.0.0.1:9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
@@ -153,7 +153,7 @@ services:
     image: kexa/kexa-cronicle
     container_name: cronicle-dind-kexa
     ports:
-      - "3012:3012"
+      - "127.0.0.1:3012:3012"
     environment:
       API_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # CRONICLE_API_KEY in Kexa API
       INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
@@ -178,7 +178,7 @@ services:
     image: postgres
     container_name: bddpostgresql
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admn45
@@ -204,7 +204,7 @@ services:
     volumes:
       - ./pgvector-data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     networks:
       - kexabackend
 
@@ -221,7 +221,7 @@ services:
       - POSTGRES_PASSWORD=mypassword
       - OPENAI_API_KEY=XXXXXXXXXXXXXXXXXXXX
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./uploads:/app/uploads
     depends_on:
@@ -233,7 +233,7 @@ services:
     image: grafana/grafana
     user: "${UID}:${GID}"
     ports:
-      - "8082:3000"
+      - "127.0.0.1:8082:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admn45
