@@ -126,6 +126,7 @@ services:
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge
+      KEYCLOAK_FRONTEND_URL: "https://${HOST}/keycloak/"
       KC_HTTP_RELATIVE_PATH: "/keycloak"
     command:
       - start
