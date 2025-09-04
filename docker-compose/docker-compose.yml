@@ -131,7 +131,7 @@ services:
       - --http-enabled=true
       - --hostname-strict=false
     healthcheck:
-      test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
+      test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:9000/health/live"]
       interval: 5s
       timeout: 5s
       retries: 30
