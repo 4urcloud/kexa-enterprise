@@ -124,10 +124,13 @@ services:
       KC_HEALTH_ENABLED: "true"
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
+      KC_PROXY_HEADERS: xforwarded 
+      KC_PROXY: edge 
     command:
       - start
       - --https-port=8443
       - --hostname-strict=false
+      - --proxy-headers forwarded
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
       interval: 5s
