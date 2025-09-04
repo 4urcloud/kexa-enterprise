@@ -125,6 +125,7 @@ services:
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge
       KC_HTTP_RELATIVE_PATH: "/keycloak"
+      KC_HOSTNAME_ADMIN_URL: "/auth/admin"
     command:
       - start
       - --http-port=8080
