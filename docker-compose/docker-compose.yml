@@ -130,7 +130,6 @@ services:
       - start
       - --https-port=8443
       - --hostname-strict=false
-      - --proxy-headers forwarded
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
       interval: 5s
