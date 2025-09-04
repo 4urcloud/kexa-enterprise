@@ -25,7 +25,7 @@ services:
       KEYCLOAK_REALM: "kexa" # default Realm
       URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "https://${HOST}/api/app" # Cronicle API url (ending with /api)
-      GRAFANA_URL: "http://${HOST}:8082/"
+      GRAFANA_URL: "http://grafana:8082/"
     restart: always
     # healthcheck:
     #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/"]
@@ -55,7 +55,7 @@ services:
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
       PORT: 4012
-      SEQ_URL: "http://${HOST}:5341"
+      SEQ_URL: "http://seq:5341"
       DATASOURCE_TYPE: postgres # mysql or postgres
       DISABLE_SSL_CHECK: "true"
       DS_HOST: bddpostgresql
@@ -73,7 +73,7 @@ services:
       DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
       CRONICLE_URL: "http://cronicle:3012"
       CRONICLE_API_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # as you want but same in Cronicle
-      LLM_API_URL: "http://${HOST}:8000"
+      LLM_API_URL: "http://ragapi:8000"
       HELM_APP_NAME: kexa-helm
       NODE_TLS_REJECT_UNAUTHORIZED: "0"
     healthcheck:
@@ -103,6 +103,7 @@ services:
     environment:
       ACCEPT_EULA: Y
       SEQ_FIRSTRUN_ADMINPASSWORD: admin45
+      SEQ_API_CANONICALURI: http://${HOST}/seq
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
