@@ -24,7 +24,7 @@ services:
       KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "kexa" # default Realm
       URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
-      CRONICLE_URL: "https://${HOST}/api/app" # Cronicle API url (ending with /api)
+      CRONICLE_URL: "https://${HOST}/api" # Cronicle API url (ending with /api)
       GRAFANA_URL: "http://grafana:8082/"
     restart: always
     # healthcheck:
@@ -72,7 +72,7 @@ services:
       DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
       DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
       CRONICLE_URL: "http://cronicle:3012"
-      CRONICLE_API_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # as you want but same in Cronicle
+      CRONICLE_API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # as you want but same in Cronicle
       LLM_API_URL: "http://ragapi:8000"
       HELM_APP_NAME: kexa-helm
       NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -155,7 +155,7 @@ services:
     ports:
       - "127.0.0.1:3012:3012"
     environment:
-      API_KEY: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" # CRONICLE_API_KEY in Kexa API
+      API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # CRONICLE_API_KEY in Kexa API
       INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
       API_SECRET_KEY: "secretKey" # same as the one in Kexa API
       API_SECRET_IV: "secretIV" # same as the one in Kexa API
