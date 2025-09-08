@@ -20,7 +20,7 @@ Don't forget to create the .env file in the docker-compose folder.
 
 run
 ```console
-cp .env-example .env
+cp .env-sample .env
 ```
 
 correct the .env file with your values.
