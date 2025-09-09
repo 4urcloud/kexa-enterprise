@@ -25,7 +25,7 @@ services:
       KEYCLOAK_REALM: "kexa" # default Realm
       URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
       CRONICLE_URL: "https://${HOST}/api" # Cronicle API url (ending with /api)
-      GRAFANA_URL: "http://grafana:8082/"
+      GRAFANA_URL: "https://${HOST}/d"
     restart: always
     # healthcheck:
     #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/"]
@@ -242,7 +242,7 @@ services:
     image: grafana/grafana
     user: "${UID}:${GID}"
     ports:
-      - "127.0.0.1:8082:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admn45
@@ -252,6 +252,11 @@ services:
       - GF_DATABASE_USER=admin
       - GF_DATABASE_PASSWORD=admn45
       - GF_DATABASE_SSL_MODE=disable
+      - GF_SERVER_ROOT_URL=https://${HOST}/d # ok
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true # ok
+      - GF_SECURITY_ALLOW_EMBEDDING=true # ok
+      - GF_AUTH_ANONYMOUS_ENABLED=true # ??
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer # ??
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false
       - GF_ANALYTICS_REPORTING_ENABLED=false
     volumes:
