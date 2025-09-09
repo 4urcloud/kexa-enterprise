@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,600;1,600&family=Didact+Gothic&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Quattrocento:wght@400;700&display=swap');
+
+.kexa-title-font {
+  font-family: Oswald, sans-serif;
+}
+
+.kexa-body-font {
+  font-family: 'Quattrocento Sans', sans-serif;
+}
+
+:root {
+  --kexa-primary: #81c5cd;
+  --kexa-secondary: #26A69A;
+  --kexa-accent: #9C27B0;
+  --kexa-dark: #1D1D1D;
+  --kexa-dark-page: #31363F;
+  --kexa-positive: #21BA45;
+  --kexa-negative: #C10015;
+  --kexa-info: #31CCEC;
+  --kexa-warning: #F2C037;
+}
+
+/* Default Kexa Theme Styles */
+body, html {
+  background: hsla(213, 100%, 50%, 0.1);
+  background: linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  background: -moz-linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  background: -webkit-linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0072ff", endColorstr="#48ABBB", GradientType=1);
+  background-color: #f5f5f5;
+  font-family: 'Quattrocento Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Common Kexa Styles */
+.kexa-button {
+  background: var(--kexa-primary);
+  background-color: var(--kexa-primary);
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Quattrocento Sans', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.kexa-button:hover {
+  background: var(--kexa-secondary);
+  background-color: var(--kexa-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px 0 rgba(129, 197, 205, 0.4);
+}
+
+.kexa-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.kexa-input {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 2px solid #e0e0e0;
+  color: #333;
+  border-radius: 8px;
+  font-family: 'Quattrocento Sans', sans-serif;
+}
+
+.kexa-input:focus {
+  background-color: white;
+  border-color: var(--kexa-primary);
+  box-shadow: 0 0 0 3px rgba(129, 197, 205, 0.2);
+}

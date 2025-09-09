@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,600;1,600&family=Didact+Gothic&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Quattrocento:wght@400;700&display=swap');
+
+.kexa-title-font {
+  font-family: Oswald, sans-serif;
+}
+
+.kexa-body-font {
+  font-family: 'Quattrocento Sans', sans-serif;
+}
+
+:root {
+  --kexa-primary: #81c5cd;
+  --kexa-secondary: #26A69A;
+  --kexa-accent: #9C27B0;
+  --kexa-dark: #1D1D1D;
+  --kexa-dark-page: #31363F;
+  --kexa-positive: #21BA45;
+  --kexa-negative: #C10015;
+  --kexa-info: #31CCEC;
+  --kexa-warning: #F2C037;
+}
+
+/* Welcome Page Base Styles */
+body, html {
+  background: hsla(213, 100%, 50%, 0.1);
+  background: linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  background: -moz-linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  background: -webkit-linear-gradient(0deg, hsla(213, 100%, 50%, 0.1) 0%, hsla(188, 46%, 51%, 0.1) 87%, hsla(186, 43%, 51%, 0.1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0072ff", endColorstr="#48ABBB", GradientType=1);
+  background-color: #f5f5f5;
+  font-family: 'Quattrocento Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Welcome Container */
+.welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.welcome-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  text-align: center;
+}
+
+.welcome-logo {
+  max-width: 200px;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 2rem;
+}
+
+.welcome-title {
+  font-family: Oswald, sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--kexa-primary);
+  margin-bottom: 1rem;
+  text-shadow: 0px 1px #e6e6e6;
+}
+
+.welcome-subtitle {
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.welcome-description {
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.welcome-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.welcome-button {
+  background: var(--kexa-primary);
+  background-color: var(--kexa-primary);
+  padding: 12px 24px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Quattrocento Sans', sans-serif;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.welcome-button:hover {
+  background: var(--kexa-secondary);
+  background-color: var(--kexa-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px 0 rgba(129, 197, 205, 0.4);
+  text-decoration: none;
+  color: white;
+}
+
+.welcome-button.secondary {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.welcome-button.secondary:hover {
+  background-color: rgba(129, 197, 205, 0.1);
+  border-color: var(--kexa-primary);
+  color: var(--kexa-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .welcome-card {
+    padding: 1.5rem;
+    margin: 10px;
+  }
+  
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+  
+  .welcome-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .welcome-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-logo {
+    max-width: 150px;
+    max-height: 60px;
+  }
+}
