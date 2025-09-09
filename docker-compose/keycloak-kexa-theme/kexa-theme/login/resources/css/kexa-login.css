@@ -347,6 +347,9 @@ a:hover {
 .login-pf .container {
   padding: 0;
   background: transparent !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
 }
 
 .login-pf-page {
@@ -490,6 +493,10 @@ div, span, p, h1, h2, h3, h4, h5, h6 {
 #kc-container, #kc-container-wrapper {
   background: transparent !important;
   background-color: transparent !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .form-horizontal .form-group, 
@@ -513,7 +520,10 @@ div, span, p, h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  width: 100% !important;
+  max-width: 100% !important;
   padding: 20px 0;
+  margin: 0 !important;
 }
 
 .login-pf-page #kc-content {
@@ -638,6 +648,26 @@ div, span, p, h1, h2, h3, h4, h5, h6 {
   border-radius: 4px !important;
   color: #666 !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.card-pf {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#kc-content {
+  width: 100% !important;
+  max-width: 520px !important;
+  margin: 0 auto !important;
 }
 
 .progress, .spinner, .loading {

@@ -40,30 +40,21 @@
 
 <body class="login-pf ${bodyClass}">
     <div class="login-pf-page">
-        <div id="kc-container" class="container">
-            <div id="kc-container-wrapper">
-                <div id="kc-header" class="${properties.kcHeaderClass!}">
-                    <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">
-                        <#nested "header">
-                    </div>
-                </div>
-                <div class="card-pf">
-                    <div id="kc-content">
-                        <div id="kc-content-wrapper">
-                            <#nested "form">
-                            
-                            <#if displayInfo>
-                                <div id="kc-info" class="${properties.kcSignUpClass!}">
-                                    <div id="kc-info-wrapper" class="${properties.kcInfoAreaWrapperClass!}">
-                                        <#nested "info">
-                                    </div>
-                                </div>
-                            </#if>
-                        </div>
-                    </div>
-                </div>
+        <div id="kc-header" class="${properties.kcHeaderClass!}">
+            <div id="kc-header-wrapper" class="${properties.kcHeaderWrapperClass!}">
+                <#nested "header">
             </div>
         </div>
+        
+        <#nested "form">
+        
+        <#if displayInfo>
+            <div id="kc-info" class="${properties.kcSignUpClass!}">
+                <div id="kc-info-wrapper" class="${properties.kcInfoAreaWrapperClass!}">
+                    <#nested "info">
+                </div>
+            </div>
+        </#if>
     </div>
 
     <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
