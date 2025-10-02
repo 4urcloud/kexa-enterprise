@@ -11,9 +11,6 @@ services:
     networks:
       - kexafrontend
       - kexabackend
-    # depends_on:
-    #   kexafrontend:
-    #     condition: service_healthy
 
   kexafrontend:
     image: kexa/kexa-enterprise-front
@@ -22,17 +19,11 @@ services:
       - "127.0.0.1:9400:9000"
     environment:
       KEYCLOAK_URL: "https://${HOST}:8443/"
-      KEYCLOAK_REALM: "kexa" # default Realm
-      URL_API_HOST: "https://${HOST}/api" # Kexa API url (ending with /api)
-      CRONICLE_URL: "https://${HOST}/api" # Cronicle API url (ending with /api)
+      KEYCLOAK_REALM: "kexa" # default realm, can be changed
+      URL_API_HOST: "http://localhost:4012/api" # "https://${HOST}/api" in VM
+      CRONICLE_URL: "http://localhost:3012/api" # "https://${HOST}/api" in VM
       GRAFANA_URL: "https://${HOST}/d"
     restart: always
-    # healthcheck:
-    #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 2
-    #   start_period: 60s
     networks:
       - kexabackend
     depends_on:
@@ -64,15 +55,15 @@ services:
       DS_PASSWORD: admn45
       DS_DATABASE: kexabdd
       DS_NAME: kexabdd
-      SECRET_KEY: secretKey # same as in Cronicle DinD
-      SECRET_IV: secretIV # same as in Cronicle DinD
-      ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle DinD
+      SECRET_KEY: secretKey # same as in Cronicle deployment
+      SECRET_IV: secretIV # same as in Cronicle deployment
+      ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle deployment
       DEFAULT_CLIENT_PASSWORD: defaultPassword # Choose init password, will be changed on first login
-      DEFAULT_REALM_NAME: kexa # default Realm: same as in Kexa Frontend
-      DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle DinD
+      DEFAULT_REALM_NAME: kexa
+      DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle deployment
       DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
       CRONICLE_URL: "http://cronicle:3012"
-      CRONICLE_API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # as you want but same in Cronicle
+      CRONICLE_API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # same as in Cronicle deployment
       LLM_API_URL: "http://ragapi:8000"
       HELM_APP_NAME: kexa-helm
       NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -166,7 +157,7 @@ services:
     environment:
       API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # CRONICLE_API_KEY in Kexa API
       INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
-      API_SECRET_KEY: "secretKey" # same as the one in Kexa API
+      API_SECRET_KEY: "secretKey" # same as the one in Kexa API 
       API_SECRET_IV: "secretIV" # same as the one in Kexa API
       API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
       KEXA_API_URL: "https://${HOST}/api"
@@ -174,6 +165,7 @@ services:
       KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./cronicle-data:/opt/cronicle/data
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping"]
       interval: 10s
@@ -252,11 +244,11 @@ services:
       - GF_DATABASE_USER=admin
       - GF_DATABASE_PASSWORD=admn45
       - GF_DATABASE_SSL_MODE=disable
-      - GF_SERVER_ROOT_URL=https://${HOST}/d # ok
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true # ok
-      - GF_SECURITY_ALLOW_EMBEDDING=true # ok
-      - GF_AUTH_ANONYMOUS_ENABLED=true # ??
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer # ??
+      - GF_SERVER_ROOT_URL=https://${HOST}/d
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false
       - GF_ANALYTICS_REPORTING_ENABLED=false
     volumes:
