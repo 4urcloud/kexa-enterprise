@@ -20,8 +20,7 @@
         </div>
 
         <div class="introduction-text kexa-body-font">
-          Sign in to your account to access Kexa Premium, first time running ?
-          Check your Kexa API logs, it will display your admin credentials at first launch.
+          Sign in to your account to access Kexa Premium, default user-password is "kexa-admin" and "defaultPassword".
         </div>
 
         <#if realm.password>
