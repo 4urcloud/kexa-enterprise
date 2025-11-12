@@ -50,7 +50,7 @@ runcmd:
   - usermod -aG docker admnkexa
 
   - cd /opt
-  - git clone https://github.com/4urcloud/kexa-enterprise.git kexa
+  - git clone https://github.com/4urcloud/kexa-enterprise.git
   - cd /opt/kexa
 
   - chown -R 1000:1000 /opt/kexa

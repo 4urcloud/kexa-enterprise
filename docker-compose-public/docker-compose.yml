@@ -30,7 +30,7 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command: ["while true; do certbot renew --webroot --webroot-path /var/www/certbot/ --quiet && sleep 12h; done"]
     networks:
-      - internal_network
+      - kexafrontend
 
   kexafrontend:
     image: kexa/kexa-enterprise-front
