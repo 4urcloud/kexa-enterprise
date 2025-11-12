@@ -30,6 +30,27 @@ run
 docker-compose up -d
 ```
 
+You can use the directory docker-compose-public to make a public installation secure with oauth.
+
+create certificate
+```console
+docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d [domain-name]
+```
+if no error run the command.
+
+```console
+docker-compose run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d [domain-name]
+```
+uncomment ssl in nginx.conf and run 
+```console
+docker-compose up -d
+```
+
+renew cert after 3 months
+```console
+docker-compose run --rm certbot renew
+```
+
 For kubernetes you cab use the helm to install.
 
 install the helm kexa

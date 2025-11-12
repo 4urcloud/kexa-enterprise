@@ -1,0 +1,294 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-scripts/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx-scripts/certs:/etc/nginx/certs
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/letsencrypt/:ro
+    restart: always
+    networks:
+      - kexafrontend
+      - kexabackend
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - kexafrontend
+  certbot-renew:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["while true; do certbot renew --webroot --webroot-path /var/www/certbot/ --quiet && sleep 12h; done"]
+    networks:
+      - internal_network
+
+  kexafrontend:
+    image: kexa/kexa-enterprise-front
+    container_name: kexafrontend
+    ports:
+      - "127.0.0.1:9400:9000"
+    environment:
+      KEYCLOAK_URL: "https://${HOST}:8443/"
+      KEYCLOAK_REALM: "kexa" # default realm, can be changed
+      URL_API_HOST: "https://${HOST}/api"
+      CRONICLE_URL: "https://${HOST}/api"
+      GRAFANA_URL: "https://${HOST}/d"
+    restart: always
+    networks:
+      - kexabackend
+    depends_on:
+      bddpostgresql:
+        condition: service_healthy
+      seq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  kexaapi:
+    image: kexa/kexa-enterprise-api
+    restart: always
+    container_name: kexaapi
+    ports:
+      - "127.0.0.1:4012:4012"
+    environment:
+      KEYCLOAK_URL: "https://keycloak:8443"
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_USER: admin
+      KEXA_URL: "http://${HOST}:9400/*"
+      PORT: 4012
+      SEQ_URL: "http://seq:5341"
+      DATASOURCE_TYPE: postgres # mysql or postgres
+      DISABLE_SSL_CHECK: "true"
+      DS_HOST: bddpostgresql
+      DS_PORT: 5432
+      DS_USER: admin
+      DS_PASSWORD: admn45
+      DS_DATABASE: kexabdd
+      DS_NAME: kexabdd
+      SECRET_KEY: secretKey # same as in Cronicle deployment
+      SECRET_IV: secretIV # same as in Cronicle deployment
+      ENCRYPTION_METHOD: AES-256-CBC # same as Cronicle deployment
+      DEFAULT_CLIENT_PASSWORD: defaultPassword # Choose init password, will be changed on first login
+      DEFAULT_REALM_NAME: kexa
+      DEFAULT_API_KEY_NAME: KexaDefaultApiKey # same as in Cronicle deployment
+      DEFAULT_API_KEY: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # generate an uid
+      CRONICLE_URL: "http://cronicle:3012"
+      CRONICLE_API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # same as in Cronicle deployment
+      LLM_API_URL: "http://ragapi:8000"
+      HELM_APP_NAME: kexa-helm
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4012/api/category/"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+      start_period: 60s
+    depends_on:
+      bddpostgresql:
+        condition: service_healthy
+      seq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - kexabackend
+
+  seq:
+    image: datalust/seq
+    restart: always
+    volumes:
+      - ./seq:/data
+    ports:
+      - "127.0.0.1:5341:5341"
+      - "127.0.0.1:8441:80"
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORD: admin45
+      SEQ_API_CANONICALURI: http://${HOST}/seq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - kexabackend
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    user: root
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
+    command:
+      - start
+      - --https-port=8443
+      - --hostname-strict=false
+      - --spi-theme-default=kexa-theme
+      - --spi-theme--login-theme=kexa-theme
+      - --spi-theme--welcome-theme=kexa-theme
+      - --spi-theme--admin-theme=kexa-theme
+      - --spi-theme--account-theme=kexa-theme
+      - --spi-theme--email-theme=kexa-theme
+      - --spi-theme-cache-themes=false
+      - --spi-theme-cache-templates=false
+      - --spi-theme--static-max-age=-1
+    healthcheck:
+      test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    depends_on:
+      bddpostgresql:
+        condition: service_healthy
+    ports:
+      - "8443:8443"
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - ./keycloak:/opt/keycloak/data
+      - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
+      - ./keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
+      - ./keycloak-scripts/certs:/opt/keycloak/conf
+      - ./keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
+    networks:
+      - kexafrontend
+      - kexabackend
+
+  cronicle:
+    image: kexa/kexa-cronicle
+    container_name: cronicle-dind-kexa
+    ports:
+      - "127.0.0.1:3012:3012"
+    environment:
+      API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # CRONICLE_API_KEY in Kexa API
+      INTERFACE_CONFIGURATION_ENABLED: "true" # true for saas
+      API_SECRET_KEY: "secretKey" # same as the one in Kexa API 
+      API_SECRET_IV: "secretIV" # same as the one in Kexa API
+      API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
+      KEXA_API_URL: "https://${HOST}/api"
+      KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
+      KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./cronicle-data:/opt/cronicle/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - kexabackend
+
+  bddpostgresql:
+    image: postgres
+    container_name: bddpostgresql
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admn45
+      POSTGRES_DB: kexabdd
+      PGDATA: /var/lib/postgresql/data/pgdata # Emplacement des données à l'intérieur du conteneur
+    volumes:
+      - ./bddpostgresql:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - kexabackend
+
+  db:
+    image: pgvector/pgvector:0.8.0-pg17
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - ./pgvector-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    networks:
+      - kexabackend
+
+  ragapi:
+    image: kexa/kexa-enterprise-genai
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - LLM_PROVIDER=openai
+      - LLM_MODEL=gpt-4
+      - LLM_TEMPERATURE=0.1
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - OPENAI_API_KEY=XXXXXXXXXXXXXXXXXXXX
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - db
+    networks:
+      - kexabackend
+
+  grafana:
+    image: grafana/grafana
+    user: "${UID}:${GID}"
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admn45
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=bddpostgresql
+      - GF_DATABASE_NAME=kexabdd
+      - GF_DATABASE_USER=admin
+      - GF_DATABASE_PASSWORD=admn45
+      - GF_DATABASE_SSL_MODE=disable
+      - GF_SERVER_ROOT_URL=https://${HOST}/d
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana-dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./grafana-dashboards/dashboards:/var/lib/grafana/dashboards
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - kexabackend
+    depends_on:
+      bddpostgresql:
+        condition: service_healthy
+
+networks:
+  kexafrontend:
+    driver: bridge
+  kexabackend:
+    driver: bridge

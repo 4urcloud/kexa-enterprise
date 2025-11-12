@@ -1,0 +1,101 @@
+#cloud-config
+hostname: kexa
+fqdn: kexa.4urcloud.fr
+manage_etc_hosts: true
+
+users:
+  - name: admnkexa
+    groups: docker, sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    # pass: admnkexa 
+    # generate: mkpasswd --method=SHA-512 --rounds=4096
+    passwd: $6$rounds=4096$saltysalt$5Dz0J9rV7k8YqZ3j.QN5xX8yK2p1L4m9n0B3c6v7x8z9A0b1C2d3E4f5G6h7I8j9K0l1M2n3O4p5Q6r7S8t9U0
+
+package_update: true
+package_upgrade: true
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - software-properties-common
+  - git
+  - htop
+  - vim
+  - wget
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - docker.io
+  - docker-compose
+
+runcmd:
+  - ufw --force enable
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow ssh
+  - ufw allow 80/tcp
+  - ufw allow 22/tcp
+  - ufw allow 443/tcp
+  - systemctl enable ufw
+
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker admnkexa
+
+  - cd /opt
+  - git clone https://github.com/4urcloud/kexa-enterprise.git kexa
+  - cd /opt/kexa
+
+  - chown -R 1000:1000 /opt/kexa
+  - chown -R admnkexa:admnkexa /opt/kexa
+  - chmod +x /opt/kexa/*.sh 2>/dev/null || true
+
+write_files:
+  - path: /etc/fail2ban/jail.local
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [DEFAULT]
+      bantime = 3600
+      findtime = 600
+      maxretry = 3
+      action = %(action_mwl)s
+
+      [sshd]
+      enabled = true
+      port = 22
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3
+      bantime = 3600
+      findtime = 600
+
+      [sshd-ddos]
+      enabled = true
+      port = 22
+      filter = sshd-ddos
+      logpath = /var/log/auth.log
+      maxretry = 6
+      findtime = 60
+      bantime = 600
+
+  - path: /etc/fail2ban/filter.d/sshd-ddos.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      [Definition]
+      failregex = ^%(__prefix_line)sDid not receive identification string from <HOST>\s*$
+                  ^%(__prefix_line)sConnection closed by <HOST> port \d+ \[preauth\]\s*$
+                  ^%(__prefix_line)sConnection reset by <HOST> port \d+ \[preauth\]\s*$
+      ignoreregex =
+
+# Configuration finale du système
+final_message: |
+  ========================================
