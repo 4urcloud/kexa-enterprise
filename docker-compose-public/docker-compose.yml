@@ -61,7 +61,7 @@ services:
     ports:
       - "127.0.0.1:4012:4012"
     environment:
-      KEYCLOAK_URL: "https://keycloak:8443"
+      KEYCLOAK_URL: "https://keycloak:8080"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -133,11 +133,9 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
     command:
       - start
-      - --https-port=8443
+      - --http-port=8080
       - --hostname-strict=false
       - --spi-theme-default=kexa-theme
       - --spi-theme--login-theme=kexa-theme
@@ -149,7 +147,7 @@ services:
       - --spi-theme-cache-templates=false
       - --spi-theme--static-max-age=-1
     healthcheck:
-      test: ["CMD-SHELL", "java /tmp/HealthCheck.java https://localhost:9000/health/live"]
+      test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:9000/health/live"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -157,7 +155,7 @@ services:
       bddpostgresql:
         condition: service_healthy
     ports:
-      - "8443:8443"
+      - "127.0.0.1:8080:8080"
       - "127.0.0.1:9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
