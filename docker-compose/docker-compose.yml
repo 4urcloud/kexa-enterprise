@@ -20,8 +20,8 @@ services:
     environment:
       KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "kexa" # default realm, can be changed
-      URL_API_HOST: "http://localhost:4012/api" # "https://${HOST}/api" in VM
-      CRONICLE_URL: "http://localhost:3012/api" # "https://${HOST}/api" in VM
+      URL_API_HOST: "http://${HOST}:4012/api" # "https://${HOST}/api" in VM
+      CRONICLE_URL: "http://${HOST}:3012/api" # "https://${HOST}/api" in VM
       GRAFANA_URL: "https://${HOST}/d"
     restart: always
     networks:
