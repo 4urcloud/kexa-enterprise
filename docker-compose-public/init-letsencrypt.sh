@@ -1,14 +1,22 @@
 #!/bin/bash
 
+# Load variables from .env file
+if [ -f .env ]; then
+  export $(cat .env | xargs)
+else
+  echo "Error: .env file missing."
+  exit 1
+fi
+
 if ! [ -x "$(command -v docker-compose)" ]; then
   echo 'Error: docker-compose is not installed.' >&2
   exit 1
 fi
 
-domains=(example.org www.example.org)
+domains=($HOSTNAME)
 rsa_key_size=4096
-data_path="./data/certbot"
-email="" # Adding a valid address is strongly recommended
+data_path="./certbot"
+email="$EMAIL" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -18,7 +26,6 @@ if [ -d "$data_path" ]; then
   fi
 fi
 
-
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading recommended TLS parameters ..."
   mkdir -p "$data_path/conf"
@@ -27,19 +34,24 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
   echo
 fi
 
-echo "### Creating dummy certificate for $domains ..."
-path="/etc/letsencrypt/live/$domains"
+echo "### Creating dummy certificate for $domains (using local openssl)..."
+
+if ! [ -x "$(command -v openssl)" ]; then
+  echo 'Error: openssl is not installed on your host machine. Please install it to create the dummy certificate.' >&2
+  exit 1
+fi
+
+# On crée les dossiers sur la machine hôte
 mkdir -p "$data_path/conf/live/$domains"
-docker-compose run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
+
+# On exécute openssl localement et on écrit directement dans les dossiers
+openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1 \
+  -keyout "$data_path/conf/live/$domains/privkey.pem" \
+  -out "$data_path/conf/live/$domains/fullchain.pem" \
+  -subj "/CN=localhost"
 echo
-
-
-echo "### Starting nginx ..."
-docker-compose up --force-recreate -d nginx
+echo "### Starting "
+docker-compose up -d 
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
@@ -49,9 +61,8 @@ docker-compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
 echo
 
-
 echo "### Requesting Let's Encrypt certificate for $domains ..."
-#Join $domains to -d args
+# Join $domains to -d args
 domain_args=""
 for domain in "${domains[@]}"; do
   domain_args="$domain_args -d $domain"
