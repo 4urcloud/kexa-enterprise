@@ -166,6 +166,7 @@ services:
       - ./keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
       - ./keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
+      - ./keycloak-scripts/JavaCurl.java:/tmp/JavaCurl.java
       - ./keycloak-scripts/certs:/opt/keycloak/conf
       - ./keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
     networks:
