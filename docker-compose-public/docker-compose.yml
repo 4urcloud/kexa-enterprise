@@ -155,10 +155,10 @@ services:
       - --spi-theme-cache-templates=false
       - --spi-theme--static-max-age=-1
     healthcheck:
-      test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:8080/auth/health/live"]
+      test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:9000/auth/health/live"]
       interval: 5s
       timeout: 5s
-      retries: 30
+      retries: 45
     depends_on:
       bddpostgresql:
         condition: service_healthy
