@@ -137,11 +137,9 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_PATH: /auth
+      KC_HTTP_RELATIVE_PATH: /auth/
     command:
       - start
-      - --proxy-headers=xforwarded
-      - --hostname-strict=false
-      - --http-relative-path=/auth
       - --spi-theme-default=kexa-theme
       - --spi-theme--login-theme=kexa-theme
       - --spi-theme--welcome-theme=kexa-theme
