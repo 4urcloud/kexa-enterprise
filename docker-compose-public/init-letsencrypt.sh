@@ -34,16 +34,22 @@ if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/
   echo
 fi
 
-echo "### Creating dummy certificate for $domains ..."
-path="/etc/letsencrypt/live/$domains"
+echo "### Creating dummy certificate for $domains (using local openssl)..."
+
+if ! [ -x "$(command -v openssl)" ]; then
+  echo 'Error: openssl is not installed on your host machine. Please install it to create the dummy certificate.' >&2
+  exit 1
+fi
+
+# On crée les dossiers sur la machine hôte
 mkdir -p "$data_path/conf/live/$domains"
-docker-compose run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
+
+# On exécute openssl localement et on écrit directement dans les dossiers
+openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1 \
+  -keyout "$data_path/conf/live/$domains/privkey.pem" \
+  -out "$data_path/conf/live/$domains/fullchain.pem" \
+  -subj "/CN=localhost"
 echo
-sudo chmod -R 755 "$data_path/conf/live"
 echo "### Starting "
 docker-compose up -d 
 echo
