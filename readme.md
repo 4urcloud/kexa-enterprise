@@ -61,3 +61,4 @@ helm upgrade --install kexa kexa/ \
     --set persistence.enabled=true
 ```
 
+scw instance server create zone=fr-par-1 image=Debian Trixie type=DEV1-S

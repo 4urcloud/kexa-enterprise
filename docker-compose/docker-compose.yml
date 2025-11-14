@@ -20,8 +20,8 @@ services:
     environment:
       KEYCLOAK_URL: "https://${HOST}:8443/"
       KEYCLOAK_REALM: "kexa" # default realm, can be changed
-      URL_API_HOST: "http://localhost:4012/api" # "https://${HOST}/api" in VM
-      CRONICLE_URL: "http://localhost:3012/api" # "https://${HOST}/api" in VM
+      URL_API_HOST: "https://${HOST}/api"
+      CRONICLE_URL: "https://${HOST}/api"
       GRAFANA_URL: "https://${HOST}/d"
     restart: always
     networks:
@@ -41,7 +41,7 @@ services:
     ports:
       - "127.0.0.1:4012:4012"
     environment:
-      KEYCLOAK_URL: "https://keycloak:8443"
+      KEYCLOAK_URL: "http://keycloak:8080"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOST}:9400/*"
@@ -113,12 +113,15 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/server.crt
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/server.key
+      KC_PROXY: edge
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_PATH: /auth
     command:
       - start
-      - --https-port=8443
+      - --proxy-headers=xforwarded
       - --hostname-strict=false
+      - --http-relative-path=/auth
       - --spi-theme-default=kexa-theme
       - --spi-theme--login-theme=kexa-theme
       - --spi-theme--welcome-theme=kexa-theme
@@ -137,7 +140,7 @@ services:
       bddpostgresql:
         condition: service_healthy
     ports:
-      - "8443:8443"
+      - "127.0.0.1:8080:8080"
       - "127.0.0.1:9000:9000"
     volumes:
       - ./keycloak:/opt/keycloak/data
@@ -197,7 +200,7 @@ services:
       - kexabackend
 
   db:
-    image: pgvector/pgvector:0.8.0-pg17
+    image: pgvector/pgvector
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser

@@ -38,7 +38,7 @@ services:
     ports:
       - "127.0.0.1:9400:9000"
     environment:
-      KEYCLOAK_URL: "https://${HOST}:8443/"
+      KEYCLOAK_URL: "https://${HOST}:8080/"
       KEYCLOAK_REALM: "kexa" # default realm, can be changed
       URL_API_HOST: "https://${HOST}/api"
       CRONICLE_URL: "https://${HOST}/api"
@@ -220,7 +220,7 @@ services:
       - kexabackend
 
   db:
-    image: pgvector/pgvector:0.8.0-pg17
+    image: pgvector/pgvector
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
