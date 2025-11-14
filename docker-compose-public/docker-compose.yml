@@ -8,7 +8,7 @@ services:
       - ./nginx-scripts/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx-scripts/certs:/etc/nginx/certs
       - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/letsencrypt/:ro
+      - ./certbot/conf/:/etc/nginx/ssl
     restart: always
     networks:
       - kexafrontend
@@ -23,14 +23,19 @@ services:
     networks:
       - kexafrontend
   certbot-renew:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    entrypoint: ["/bin/sh", "-c"]
-    command: ["while true; do certbot renew --webroot --webroot-path /var/www/certbot/ --quiet && sleep 12h; done"]
-    networks:
-      - kexafrontend
+      image: certbot/certbot:latest
+      volumes:
+        - ./certbot/www/:/var/www/certbot/:rw
+        - ./certbot/conf/:/etc/letsencrypt/:rw
+      entrypoint: ["/bin/sh", "-c"]
+      command: >
+        trap exit TERM; 
+        while :; do 
+          certbot renew --webroot --webroot-path /var/www/certbot/ --quiet --deploy-hook "echo 'Renewal successful, please reload nginx manually or use a shared script'"; 
+          sleep 12h; 
+        done
+      networks:
+        - kexafrontend
 
   kexafrontend:
     image: kexa/kexa-enterprise-front
