@@ -44,11 +44,11 @@ services:
     ports:
       - "127.0.0.1:9400:9000"
     environment:
-      KEYCLOAK_URL: "https://${HOST}:8080/"
+      KEYCLOAK_URL: "https://${HOSTNAME}:8080/"
       KEYCLOAK_REALM: "kexa" # default realm, can be changed
-      URL_API_HOST: "https://${HOST}/api"
-      CRONICLE_URL: "https://${HOST}/api"
-      GRAFANA_URL: "https://${HOST}/d"
+      URL_API_HOST: "https://${HOSTNAME}/api"
+      CRONICLE_URL: "https://${HOSTNAME}/api"
+      GRAFANA_URL: "https://${HOSTNAME}/d"
     restart: always
     networks:
       - kexabackend
@@ -70,7 +70,7 @@ services:
       KEYCLOAK_URL: "https://keycloak:8080"
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_USER: admin
-      KEXA_URL: "http://${HOST}:9400/*"
+      KEXA_URL: "http://${HOSTNAME}:9400/*"
       PORT: 4012
       SEQ_URL: "http://seq:5341"
       DATASOURCE_TYPE: postgres # mysql or postgres
@@ -120,7 +120,7 @@ services:
     environment:
       ACCEPT_EULA: Y
       SEQ_FIRSTRUN_ADMINPASSWORD: admin45
-      SEQ_API_CANONICALURI: http://${HOST}/seq
+      SEQ_API_CANONICALURI: http://${HOSTNAME}/seq
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
@@ -193,7 +193,7 @@ services:
       API_SECRET_KEY: "secretKey" # same as the one in Kexa API 
       API_SECRET_IV: "secretIV" # same as the one in Kexa API
       API_ENCRYPTION_METHOD: "AES-256-CBC" # same as the one in Kexa API
-      KEXA_API_URL: "https://${HOST}/api"
+      KEXA_API_URL: "https://${HOSTNAME}/api"
       KEXA_API_TOKEN_NAME: "KexaDefaultApiKey" # DEFAULT_API_KEY_NAME in Kexa API
       KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
     volumes:
@@ -278,7 +278,7 @@ services:
       - GF_DATABASE_USER=admin
       - GF_DATABASE_PASSWORD=admn45
       - GF_DATABASE_SSL_MODE=disable
-      - GF_SERVER_ROOT_URL=https://${HOST}/d
+      - GF_SERVER_ROOT_URL=https://${HOSTNAME}/d
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - GF_SECURITY_ALLOW_EMBEDDING=true
       - GF_AUTH_ANONYMOUS_ENABLED=true

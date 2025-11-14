@@ -1,7 +1,7 @@
 # Bloc pour la validation Certbot (port 80)
 server {
     listen 80;
-    server_name ${HOST};
+    server_name ${HOSTNAME};
     server_tokens off;
 
     location /.well-known/acme-challenge/ {
@@ -18,8 +18,8 @@ server {
     listen 443 ssl;
     server_name ${HOST};
 
-    ssl_certificate /etc/letsencrypt/live/${HOST}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${HOST}/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/${HOSTNAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${HOSTNAME}/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
