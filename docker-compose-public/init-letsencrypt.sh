@@ -43,7 +43,7 @@ docker-compose run --rm --entrypoint "\
     -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
 echo
-
+sudo chmod -R 755 "$data_path/conf/live"
 echo "### Starting "
 docker-compose up -d 
 echo
