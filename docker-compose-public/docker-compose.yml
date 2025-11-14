@@ -130,10 +130,11 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://bddpostgresql:5432/keycloak
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admn45
+
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admn45
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
       KC_PROXY: edge
       KC_HTTP_ENABLED: "true"
