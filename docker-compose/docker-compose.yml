@@ -200,7 +200,7 @@ services:
       - kexabackend
 
   db:
-    image: pgvector/pgvector
+    image: pgvector/pgvector:0.8.1-pg18-trixie
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
