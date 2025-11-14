@@ -44,8 +44,8 @@ docker-compose run --rm --entrypoint "\
     -subj '/CN=localhost'" certbot
 echo
 
-echo "### Starting nginx ..."
-docker-compose up -d nginx
+echo "### Starting "
+docker-compose up -d 
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
