@@ -128,8 +128,10 @@ services:
     image: quay.io/keycloak/keycloak
     user: root
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://bddpostgresql:5432/keycloak
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admn45
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
@@ -211,6 +213,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata # Emplacement des données à l'intérieur du conteneur
     volumes:
       - ./bddpostgresql:/var/lib/postgresql/data
+      - ./createbdds.sh:/docker-entrypoint-initdb.d/createbdds.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
