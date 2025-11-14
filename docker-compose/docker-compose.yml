@@ -120,7 +120,6 @@ services:
       KC_HTTP_RELATIVE_PATH: /auth/
     command:
       - start
-      - --proxy-headers=xforwarded
       - --spi-theme-default=kexa-theme
       - --spi-theme--login-theme=kexa-theme
       - --spi-theme--welcome-theme=kexa-theme
