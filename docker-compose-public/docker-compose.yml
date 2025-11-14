@@ -143,7 +143,7 @@ services:
       KC_PROXY_HEADERS: forwarded
       KC_FEATURES: hostname:v2
     command:
-      - start
+      - start-dev
       - --spi-theme-default=kexa-theme
       - --spi-theme--login-theme=kexa-theme
       - --spi-theme--welcome-theme=kexa-theme
