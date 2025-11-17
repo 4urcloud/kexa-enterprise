@@ -33,7 +33,7 @@ services:
     ports:
       - "127.0.0.1:9400:9000"
     environment:
-      KEYCLOAK_URL: "https://${HOSTNAME}:8080/"
+      KEYCLOAK_URL: "https://${HOSTNAME}/auth"
       KEYCLOAK_REALM: "kexa" # default realm, can be changed
       URL_API_HOST: "https://${HOSTNAME}/api"
       CRONICLE_URL: "https://${HOSTNAME}/api"
