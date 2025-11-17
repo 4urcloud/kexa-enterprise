@@ -10,8 +10,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    entrypoint: /bin/sh -c
-    command: 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'
+    command: sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: 1
     env_file:
