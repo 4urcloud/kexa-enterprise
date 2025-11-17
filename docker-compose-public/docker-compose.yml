@@ -6,7 +6,7 @@ services:
       - ./data/nginx:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
-      - ./scripts/nginx-scripts/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
+      - ./scripts/nginx-scripts/templates/:/etc/nginx/templates/
     ports:
       - "80:80"
       - "443:443"
