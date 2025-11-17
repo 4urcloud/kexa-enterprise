@@ -6,7 +6,7 @@ services:
       - ./data/nginx:/etc/nginx/conf.d
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
-      - ./nginx-scripts/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
+      - ./scripts/nginx-scripts/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
     ports:
       - "80:80"
       - "443:443"
@@ -158,11 +158,11 @@ services:
       - "127.0.0.1:9000:9000"
     volumes:
       - ./data/keycloak:/opt/keycloak/data
-      - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
-      - ./keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
-      - ./keycloak-scripts/JavaCurl.java:/tmp/JavaCurl.java
-      - ./keycloak-scripts/certs:/opt/keycloak/conf
-      - ./keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
+      - ./scripts/keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
+      - ./scripts/keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
+      - ./scripts/keycloak-scripts/JavaCurl.java:/tmp/JavaCurl.java
+      - ./scripts/keycloak-scripts/certs:/opt/keycloak/conf
+      - ./scripts/keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
     networks:
       - kexafrontend
       - kexabackend
@@ -205,7 +205,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata # Emplacement des données à l'intérieur du conteneur
     volumes:
       - ./data/bddpostgresql:/var/lib/postgresql/data
-      - ./createbdds.sh:/docker-entrypoint-initdb.d/createbdds.sh
+      - ./scripts/createbdds.sh:/docker-entrypoint-initdb.d/createbdds.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
