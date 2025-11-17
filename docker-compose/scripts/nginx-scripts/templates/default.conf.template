@@ -6,10 +6,6 @@ server {
     server_name ${HOSTNAME};
     server_tokens off;
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
     location / {
         return 301 https://$host$request_uri;
     }
@@ -24,10 +20,8 @@ server {
     server_name ${HOSTNAME};
     server_tokens off;
 
-    ssl_certificate /etc/letsencrypt/live/${HOSTNAME}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${HOSTNAME}/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    ssl_certificate     /etc/nginx/certs/nginx.crt;
+    ssl_certificate_key /etc/nginx/certs/nginx.key;
 
 
     location /api/ {
