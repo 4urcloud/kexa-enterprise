@@ -16,6 +16,7 @@ services:
       - .env
     networks:
       - kexafrontend
+      - kexabackend
   certbot:
     image: certbot/certbot
     restart: unless-stopped
