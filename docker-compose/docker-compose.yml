@@ -128,15 +128,15 @@ services:
       KC_FEATURES: hostname:v2
     command:
       - start
-      # - --spi-theme-default=kexa-theme
-      # - --spi-theme--login-theme=kexa-theme
-      # - --spi-theme--welcome-theme=kexa-theme
-      # - --spi-theme--admin-theme=kexa-theme
-      # - --spi-theme--account-theme=kexa-theme
-      # - --spi-theme--email-theme=kexa-theme
-      # - --spi-theme-cache-themes=false
-      # - --spi-theme-cache-templates=false
-      # - --spi-theme--static-max-age=-1
+      - --spi-theme-default=kexa-theme
+      - --spi-theme--login-theme=kexa-theme
+      - --spi-theme--welcome-theme=kexa-theme
+      - --spi-theme--admin-theme=kexa-theme
+      - --spi-theme--account-theme=kexa-theme
+      - --spi-theme--email-theme=kexa-theme
+      - --spi-theme-cache-themes=false
+      - --spi-theme-cache-templates=false
+      - --spi-theme--static-max-age=-1
     healthcheck:
       test: ["CMD-SHELL", "java /tmp/HealthCheck.java http://localhost:9000/auth/health/live"]
       interval: 5s
@@ -154,7 +154,7 @@ services:
       - ./scripts/keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
       - ./scripts/keycloak-scripts/JavaCurl.java:/tmp/JavaCurl.java
       - ./scripts/keycloak-scripts/certs:/opt/keycloak/conf
-      # - ./scripts/keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
+      - ./scripts/keycloak-kexa-theme/kexa-theme:/opt/keycloak/themes/kexa-theme
     networks:
       - kexafrontend
       - kexabackend
