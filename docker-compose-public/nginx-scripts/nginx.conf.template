@@ -1,4 +1,4 @@
-# Bloc pour la validation Certbot (port 80)
+
 server {
     listen 80;
     server_name ${HOSTNAME};
@@ -13,7 +13,6 @@ server {
     }
 }
 
-# Bloc principal HTTPS (port 443)
 server {
     listen 443 ssl;
     server_name ${HOST};
@@ -23,9 +22,7 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    # --- ROUTAGE DES SERVICES ---
 
-    # Route pour l'API (kexaapi sur port 4012)
     location /api/ {
         proxy_pass http://kexaapi:4012/;
         proxy_set_header Host $host;
@@ -33,7 +30,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    # Route pour Keycloak (keycloak sur port 8080)
     location /auth/ {
         proxy_pass http://keycloak:8080/auth/;
         proxy_set_header Host $host;
@@ -41,7 +37,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    # Route pour Grafana (grafana sur port 3000)
     location /d/ {
         proxy_pass http://grafana:3000/d/;
         proxy_set_header Host $host;
@@ -49,7 +44,6 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
     
-    # Route pour Seq (seq sur port 80)
     location /seq/ {
         proxy_pass http://seq:80/; # Le port 80 interne de Seq
         proxy_set_header Host $host;
@@ -57,10 +51,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    # Route principale pour le Frontend
-    # (kexafrontend sur port 9000)
     location / {
-        # C'EST LA LIGNE QUI CASSAIT AVANT
         proxy_pass http://kexafrontend:9000; 
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
