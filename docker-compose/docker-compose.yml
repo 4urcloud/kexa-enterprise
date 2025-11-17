@@ -127,7 +127,6 @@ services:
       KC_HOSTNAME_PATH: /auth
       KC_HTTP_RELATIVE_PATH: /auth
       KC_PROXY_HEADERS: xforwarded
-      KC_FEATURES: hostname:v2
     command:
       - start
       # - --spi-theme-default=kexa-theme
