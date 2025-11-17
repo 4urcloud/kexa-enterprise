@@ -76,7 +76,7 @@ services:
       CRONICLE_API_KEY: "juWDqYMLjADoFaatim4RQb3DHeLThL7bSXPVmkPmubpgb3CiwuptmHgJ" # same as in Cronicle deployment
       LLM_API_URL: "http://ragapi:8000"
       HELM_APP_NAME: kexa-helm
-      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+      #NODE_TLS_REJECT_UNAUTHORIZED: "0"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4012/api/category/"]
       interval: 30s
@@ -97,7 +97,7 @@ services:
     image: datalust/seq
     restart: always
     volumes:
-      - ./seq:/data
+      - ./data/seq:/data
     ports:
       - "127.0.0.1:5341:5341"
       - "127.0.0.1:8441:80"
@@ -156,7 +156,7 @@ services:
       - "127.0.0.1:8080:8080"
       - "127.0.0.1:9000:9000"
     volumes:
-      - ./keycloak:/opt/keycloak/data
+      - ./data/keycloak:/opt/keycloak/data
       - ./keycloak-scripts/keycloak-script.sh:/tmp/keycloak-script.sh
       - ./keycloak-scripts/HealthCheck.java:/tmp/HealthCheck.java
       - ./keycloak-scripts/JavaCurl.java:/tmp/JavaCurl.java
@@ -182,7 +182,7 @@ services:
       KEXA_API_TOKEN: "14e2511a-5d3f-4a4a-83e5-e6dead9f8bfb" # DEFAULT_API_KEY in Kexa API
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./cronicle-data:/opt/cronicle/data
+      - ./data/cronicle-data:/opt/cronicle/data
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:3012/api/app/ping"]
       interval: 10s
@@ -203,7 +203,7 @@ services:
       POSTGRES_DB: kexabdd
       PGDATA: /var/lib/postgresql/data/pgdata # Emplacement des données à l'intérieur du conteneur
     volumes:
-      - ./bddpostgresql:/var/lib/postgresql/data
+      - ./data/bddpostgresql:/var/lib/postgresql/data
       - ./createbdds.sh:/docker-entrypoint-initdb.d/createbdds.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -221,7 +221,7 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     volumes:
-      - ./pgvector-data:/var/lib/postgresql/data
+      - ./data/pgvector-data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5433:5432"
     networks:
@@ -242,7 +242,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
-      - ./uploads:/app/uploads
+      - ./data/uploads:/app/uploads
     depends_on:
       - db
     networks:
@@ -270,7 +270,7 @@ services:
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false
       - GF_ANALYTICS_REPORTING_ENABLED=false
     volumes:
-      - ./grafana:/var/lib/grafana
+      - ./data/grafana:/var/lib/grafana
       - ./grafana-dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
       - ./grafana-dashboards/dashboards:/var/lib/grafana/dashboards
     healthcheck:
