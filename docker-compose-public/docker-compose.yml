@@ -13,6 +13,8 @@ services:
     command: [nginx-debug, '-g', 'daemon off;']
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: 1
+    env_file:
+      - .env
     networks:
       - kexafrontend
   certbot:
