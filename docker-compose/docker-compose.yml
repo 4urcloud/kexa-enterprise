@@ -44,10 +44,8 @@ services:
     ports:
       - "127.0.0.1:4012:4012"
     environment:
-      KEYCLOAK_URL: "http://keycloak:8080/auth"
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin      
-      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_URL: "http://keycloak:8080/auth"  
+      KEYCLOAK_PASSWORD: admn45
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOSTNAME}:9400/*"
       PORT: 4012
@@ -127,6 +125,7 @@ services:
       KC_HOSTNAME_PATH: /auth
       KC_HTTP_RELATIVE_PATH: /auth
       KC_PROXY_HEADERS: xforwarded
+      KC_FEATURES: hostname:v2
     command:
       - start
       # - --spi-theme-default=kexa-theme
