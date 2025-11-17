@@ -57,7 +57,7 @@ services:
       - "127.0.0.1:4012:4012"
     environment:
       KEYCLOAK_URL: "https://keycloak:8080/auth"
-      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_PASSWORD: admn45
       KEYCLOAK_USER: admin
       KEXA_URL: "http://${HOSTNAME}:9400/*"
       PORT: 4012
