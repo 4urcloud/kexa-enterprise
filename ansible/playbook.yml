@@ -1,0 +1,9 @@
+---
+- name: Install Kexa Enterprise with Docker Compose
+  hosts: kexa
+  become: true
+  vars_files:
+    - roles/kexa/defaults/main.yml
+
+  roles:
+    - kexa

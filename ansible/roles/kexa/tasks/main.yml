@@ -1,0 +1,135 @@
+---
+- name: Update and upgrade packages
+  apt:
+    update_cache: true
+    upgrade: dist
+    cache_valid_time: 3600
+
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - ufw
+      - fail2ban
+      - git
+      - jq
+    state: present
+
+- name: Add Docker GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: Add Docker repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+
+- name: Install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Start and enable Docker
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create kexa user
+  user:
+    name: "{{ kexa_user }}"
+    groups: [sudo, docker]
+    shell: /bin/bash
+    create_home: true
+
+- name: Clone Kexa repository
+  git:
+    repo: "{{ kexa_repo }}"
+    dest: "{{ kexa_home }}"
+    version: "{{ kexa_branch }}"
+  become_user: "{{ kexa_user }}"
+
+- name: Copy .env from sample
+  copy:
+    src: "{{ kexa_compose_dir }}/.env-sample"
+    dest: "{{ kexa_compose_dir }}/.env"
+    remote_src: true
+    force: false
+  become_user: "{{ kexa_user }}"
+
+- name: Set HOST in .env
+  lineinfile:
+    path: "{{ kexa_compose_dir }}/.env"
+    regexp: "^HOST="
+    line: "HOST={{ kexa_domain }}"
+  become_user: "{{ kexa_user }}"
+
+- name: Generate Keycloak self-signed certificate
+  command: >
+    openssl req -x509 -nodes -days {{ kexa_cert_days }}
+    -newkey rsa:2048 -subj "/CN={{ kexa_domain }}"
+    -keyout {{ kexa_compose_dir }}/keycloak-scripts/certs/server.key
+    -out {{ kexa_compose_dir }}/keycloak-scripts/certs/server.crt
+  args:
+    creates: "{{ kexa_compose_dir }}/keycloak-scripts/certs/server.crt"
+  when: kexa_generate_certs
+  become_user: "{{ kexa_user }}"
+
+- name: Generate Nginx self-signed certificate
+  command: >
+    openssl req -x509 -nodes -days {{ kexa_cert_days }}
+    -newkey rsa:2048 -subj "/CN={{ kexa_domain }}"
+    -keyout {{ kexa_compose_dir }}/nginx-scripts/certs/nginx.key
+    -out {{ kexa_compose_dir }}/nginx-scripts/certs/nginx.crt
+  args:
+    creates: "{{ kexa_compose_dir }}/nginx-scripts/certs/nginx.crt"
+  when: kexa_generate_certs
+  become_user: "{{ kexa_user }}"
+
+- name: Configure UFW defaults
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+  when: kexa_firewall_enabled
+
+- name: Allow firewall ports
+  ufw:
+    rule: allow
+    port: "{{ item.split('/')[0] }}"
+    proto: "{{ item.split('/')[1] }}"
+  loop: "{{ kexa_allowed_ports }}"
+  when: kexa_firewall_enabled
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+  when: kexa_firewall_enabled
+
+- name: Configure fail2ban
+  template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    mode: "0644"
+  notify: restart fail2ban
+  when: kexa_fail2ban_enabled
+
+- name: Start Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ kexa_compose_dir }}"
+    state: present
+  become_user: "{{ kexa_user }}"

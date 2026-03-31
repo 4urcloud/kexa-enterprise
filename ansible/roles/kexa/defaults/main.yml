@@ -1,0 +1,27 @@
+---
+kexa_user: admnkexa
+kexa_home: /home/{{ kexa_user }}/kexa-enterprise
+kexa_domain: kexa.example.com
+
+# Docker Compose
+kexa_compose_dir: "{{ kexa_home }}/docker-compose"
+
+# Git
+kexa_repo: git@github.com:4urcloud/kexa-enterprise.git
+kexa_branch: main
+
+# Certificates (set to true to generate self-signed, false if providing your own)
+kexa_generate_certs: true
+kexa_cert_days: 650
+
+# Firewall
+kexa_firewall_enabled: true
+kexa_allowed_ports:
+  - 22/tcp
+  - 80/tcp
+  - 443/tcp
+
+# Fail2ban
+kexa_fail2ban_enabled: true
+kexa_fail2ban_maxretry: 3
+kexa_fail2ban_bantime: 3600

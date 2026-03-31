@@ -1,0 +1,7 @@
+[sshd]
+enabled = true
+port = 22
+filter = sshd
+maxretry = {{ kexa_fail2ban_maxretry }}
+bantime = {{ kexa_fail2ban_bantime }}
+findtime = 600
