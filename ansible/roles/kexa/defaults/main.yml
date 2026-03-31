@@ -7,7 +7,7 @@ kexa_domain: kexa.example.com
 kexa_compose_dir: "{{ kexa_home }}/docker-compose"
 
 # Git
-kexa_repo: git@github.com:4urcloud/kexa-enterprise.git
+kexa_repo: https://github.com/4urcloud/kexa-enterprise.git
 kexa_branch: main
 
 # Certificates (set to true to generate self-signed, false if providing your own)
