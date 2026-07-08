@@ -2,16 +2,16 @@ import java.net.URI;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.IOException;
-import javax.net.ssl.*; // Nécessaire pour les classes SSL
+import javax.net.ssl.*; // Required for the SSL classes
 
 public class HealthCheckSimpleNoSSL {
 
-    // Notre TrustManager "non vérificateur"
+    // Our non-verifying TrustManager
     private static final TrustManager[] UNTRUSTING_TRUST_MANAGER = new TrustManager[]{
         new X509TrustManager() {
             @Override
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null; // N'accepte aucun émetteur certifié spécifique
+                return null; // Accepts no specific certified issuer
             }
             @Override
             public void checkClientTrusted(
@@ -21,12 +21,12 @@ public class HealthCheckSimpleNoSSL {
             @Override
             public void checkServerTrusted(
                 java.security.cert.X509Certificate[] certs, String authType) {
-                // Ne fait rien, accepte toujours les serveurs (désactive la vérification)
+                // Does nothing, always accepts servers (disables verification)
             }
         }
     };
 
-    // Notre HostnameVerifier "non vérificateur"
+    // Our non-verifying HostnameVerifier
     private static final HostnameVerifier UNTRUSTING_HOSTNAME_VERIFIER = (hostname, session) -> true; // Accepte toujours le nom d'hôte
 
     public static void main(String[] args) {
@@ -44,43 +44,43 @@ public class HealthCheckSimpleNoSSL {
             if (url.getProtocol().equalsIgnoreCase("https")) {
                 HttpsURLConnection httpsConnection = (HttpsURLConnection) url.openConnection();
 
-                // Initialiser un SSLContext qui utilise notre TrustManager non vérificateur
-                SSLContext sslContext = SSLContext.getInstance("TLS"); // Utilisez TLS pour la compatibilité moderne
+                // Initialize an SSLContext that uses our non-verifying TrustManager
+                SSLContext sslContext = SSLContext.getInstance("TLS"); // Use TLS for modern compatibility
                 sslContext.init(null, UNTRUSTING_TRUST_MANAGER, new java.security.SecureRandom());
 
-                // Appliquer le SSLContext et le HostnameVerifier à cette connexion spécifique
+                // Apply the SSLContext and HostnameVerifier to this specific connection
                 httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 httpsConnection.setHostnameVerifier(UNTRUSTING_HOSTNAME_VERIFIER);
 
-                connection = httpsConnection; // Utiliser la connexion HTTPS configurée
+                connection = httpsConnection; // Use the configured HTTPS connection
             } else {
-                // Pour les connexions HTTP standard, pas de configuration SSL nécessaire
+                // Standard HTTP connections need no SSL configuration
                 connection = (HttpURLConnection) url.openConnection();
             }
 
-            // Définir un timeout de connexion (optionnel, mais recommandé)
-            connection.setConnectTimeout(5000); // 5 secondes
-            connection.setReadTimeout(5000);    // 5 secondes
+            // Set a connection timeout (optional but recommended)
+            connection.setConnectTimeout(5000); // 5 seconds
+            connection.setReadTimeout(5000);    // 5 seconds
 
-            // Obtenir le code de réponse HTTP
+            // Get the HTTP response code
             int responseCode = connection.getResponseCode();
 
-            // Vérifier si la réponse est HTTP_OK (200)
+            // Check whether the response is HTTP_OK (200)
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 System.out.println("OK: " + args[0] + " (Code: " + responseCode + ")");
                 System.exit(0);
             } else {
-                System.err.println("ERREUR: " + args[0] + " (Code: " + responseCode + ")");
+                System.err.println("ERROR: " + args[0] + " (Code: " + responseCode + ")");
                 System.exit(1);
             }
 
         } catch (SSLHandshakeException e) {
-            // Cette exception NE DEVRAIT PAS se produire si la configuration est correcte,
-            // mais on la garde juste au cas où pour un diagnostic.
-            System.err.println("ERREUR SSL Handshake (devrait être ignoré): " + args[0] + " -> " + e.getMessage());
+            // This exception should NOT happen when the configuration is correct,
+            // but keep it for diagnostics just in case.
+            System.err.println("SSL handshake ERROR (should have been ignored): " + args[0] + " -> " + e.getMessage());
             System.exit(1);
         } catch (Exception e) {
-            System.err.println("ERREUR: " + args[0] + " (Problème de connexion ou URL invalide: " + e.getMessage() + ")");
+            System.err.println("ERROR: " + args[0] + " (Connection problem or invalid URL: " + e.getMessage() + ")");
             System.exit(1);
         }
     }
