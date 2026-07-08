@@ -150,7 +150,7 @@ services:
       - kexabackend
 
   cronicle:
-    image: kexa/kexa-cronicle:latest # pin to a versioned tag once published
+    image: kexa/kexa-cronicle:v1.0.0
     container_name: cronicle-dind-kexa
     ports:
       - "127.0.0.1:3012:3012"
