@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:1.29
     ports:
       - "80:80"
       - "443:443"
@@ -13,7 +13,7 @@ services:
       - kexabackend
 
   kexafrontend:
-    image: kexa/kexa-enterprise-front
+    image: kexa/kexa-enterprise-front:v1.18.12
     container_name: kexafrontend
     ports:
       - "127.0.0.1:9400:9000"
@@ -35,7 +35,7 @@ services:
         condition: service_healthy
 
   kexaapi:
-    image: kexa/kexa-enterprise-api
+    image: kexa/kexa-enterprise-api:v1.8.7
     restart: always
     container_name: kexaapi
     ports:
@@ -84,7 +84,7 @@ services:
       - kexabackend
 
   seq:
-    image: datalust/seq
+    image: datalust/seq:2025.2
     restart: always
     volumes:
       - ./seq:/data
@@ -105,7 +105,7 @@ services:
       - kexabackend
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:26.4
     user: root
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -150,7 +150,7 @@ services:
       - kexabackend
 
   cronicle:
-    image: kexa/kexa-cronicle
+    image: kexa/kexa-cronicle:latest # pin to a versioned tag once published
     container_name: cronicle-dind-kexa
     ports:
       - "127.0.0.1:3012:3012"
@@ -176,7 +176,7 @@ services:
       - kexabackend
 
   bddpostgresql:
-    image: postgres
+    image: postgres:17 # existing deployments must keep the major version their data directory was initialized with
     container_name: bddpostgresql
     ports:
       - "127.0.0.1:5432:5432"
@@ -210,7 +210,7 @@ services:
       - kexabackend
 
   ragapi:
-    image: kexa/kexa-enterprise-genai
+    image: kexa/kexa-enterprise-genai:v2.3.0
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -231,7 +231,7 @@ services:
       - kexabackend
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:12.0
     user: "${UID}:${GID}"
     ports:
       - "127.0.0.1:3000:3000"
